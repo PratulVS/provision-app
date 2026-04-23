@@ -21,7 +21,10 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getFirestore,
 collection,
-addDoc
+addDoc,
+getDoc,
+doc,
+setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -47,9 +50,12 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-window.db = db;
-window.collection = collection;
-window.addDoc = addDoc;
+window.db=db;
+window.collection=collection;
+window.addDoc=addDoc;
+window.getDoc=getDoc;
+window.doc=doc;
+window.setDoc=setDoc;
 
 </script>
 
@@ -127,7 +133,7 @@ Submit List
 
 <script>
 
-/* DEFAULT ITEMS */
+/* DEFAULT FALLBACK ITEMS */
 
 let defaultItems = {
 
@@ -143,30 +149,66 @@ sachet:["Shampoo"]
 
 };
 
-/* LOAD SAVED ITEMS FROM PRATUL */
+let itemsData = defaultItems;
 
-let savedItems =
-JSON.parse(
-localStorage.getItem("categoryItems")
-);
+/* LOAD ITEMS FROM FIREBASE */
 
-if(savedItems){
+window.onload = async function(){
 
-defaultItems = savedItems;
-
-}
-
-/* LOAD ITEMS */
-
-window.onload=function(){
-
-loadItems();
+await loadItems();
 
 };
 
-/* DISPLAY ITEMS */
+/* LOAD ITEMS */
 
-function loadItems(){
+async function loadItems(){
+
+try{
+
+let ref =
+doc(db,"categoryItems","main");
+
+let snap =
+await getDoc(ref);
+
+if(snap.exists()){
+
+itemsData = snap.data();
+
+}
+
+else{
+
+/* Create default if missing */
+
+await setDoc(
+doc(db,"categoryItems","main"),
+defaultItems
+);
+
+itemsData = defaultItems;
+
+}
+
+displayAll();
+
+}
+
+catch(error){
+
+console.log(error);
+
+itemsData = defaultItems;
+
+displayAll();
+
+}
+
+}
+
+/* DISPLAY ALL CATEGORIES */
+
+function displayAll(){
 
 displayCategory("Liquids","liquid");
 
@@ -190,7 +232,7 @@ document.getElementById(key+"Section");
 section.innerHTML =
 `<div class="category">${title}</div>`;
 
-defaultItems[key].forEach(item=>{
+itemsData[key].forEach(item=>{
 
 section.innerHTML += createItemRow(item,key);
 
@@ -198,7 +240,7 @@ section.innerHTML += createItemRow(item,key);
 
 }
 
-/* CREATE ITEM ROW */
+/* CREATE ITEM */
 
 function createItemRow(item,category){
 
@@ -211,9 +253,7 @@ if(category==="liquid"){
 qtyOptions=`
 
 <option>250 ml</option>
-
 <option>500 ml</option>
-
 <option>1 L</option>
 
 `;
@@ -227,15 +267,10 @@ if(category==="bulk"){
 qtyOptions=`
 
 <option>250 g</option>
-
 <option>500 g</option>
-
 <option>750 g</option>
-
 <option>1 kg</option>
-
 <option>1.5 kg</option>
-
 <option>2 kg</option>
 
 `;
@@ -249,9 +284,7 @@ if(category==="small"){
 qtyOptions=`
 
 <option>50 g</option>
-
 <option>100 g</option>
-
 <option>200 g</option>
 
 `;
@@ -265,9 +298,7 @@ if(category==="packet"){
 qtyOptions=`
 
 <option>1 packet</option>
-
 <option>2 packet</option>
-
 <option>3 packet</option>
 
 `;
@@ -281,9 +312,7 @@ if(category==="sachet"){
 qtyOptions=`
 
 <option>1 sachet</option>
-
 <option>2 sachet</option>
-
 <option>3 sachet</option>
 
 `;
@@ -318,7 +347,7 @@ ${qtyOptions}
 
 /* ADD CUSTOM ITEM */
 
-function addCustomItem(){
+async function addCustomItem(){
 
 let name =
 document.getElementById("customItem").value;
@@ -346,14 +375,18 @@ category="bulk";
 
 }
 
-defaultItems[category].push(name);
+/* ADD ITEM */
 
-localStorage.setItem(
-"categoryItems",
-JSON.stringify(defaultItems)
+itemsData[category].push(name);
+
+/* SAVE TO FIREBASE */
+
+await setDoc(
+doc(db,"categoryItems","main"),
+itemsData
 );
 
-loadItems();
+displayAll();
 
 document.getElementById("customItem").value="";
 document.getElementById("customQty").value="";
@@ -412,6 +445,8 @@ alert("Select at least one item");
 return;
 
 }
+
+/* SAVE LIST */
 
 await addDoc(
 collection(db,"provisionLists"),
