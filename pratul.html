@@ -583,9 +583,9 @@ btn.parentElement.remove();
 
 /* SAVE ITEMS */
 
-function saveItems(){
+async function saveItems(){
 
-let rows=
+let rows =
 document.querySelectorAll("#itemsBox .card");
 
 let newItems={
@@ -601,25 +601,29 @@ sachet:[]
 rows.forEach(row=>{
 
 let name=
-row.querySelector("input").value;
+row.querySelector("input").value.trim();
 
 let cat=
 row.querySelector("select").value;
 
-if(name)
+if(name){
+
 newItems[cat].push(name);
-
-});
-
-localStorage.setItem(
-"categoryItems",
-JSON.stringify(newItems)
-);
-
-alert("Items Saved");
 
 }
 
+});
+
+/* SAVE TO FIREBASE */
+
+await setDoc(
+doc(db,"categoryItems","main"),
+newItems
+);
+
+alert("Items Saved Successfully!");
+
+}
 /* LOGOUT */
 
 function logout(){
