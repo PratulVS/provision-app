@@ -30,11 +30,10 @@ min-height: 100vh;
 padding: 15px;
 }
 
-/* MAIN CONTAINER */
+/* CONTAINER */
 .container {
 
 max-width: 500px;
-
 margin: auto;
 
 }
@@ -50,21 +49,14 @@ margin-bottom: 15px;
 
 }
 
-/* TITLE */
 .header-title h2 {
-
 color: #333;
-
 margin-bottom: 3px;
-
 }
 
 .header-title p {
-
 color: #555;
-
 font-size: 14px;
-
 }
 
 /* LOGOUT BUTTON */
@@ -86,13 +78,7 @@ font-size: 14px;
 
 }
 
-.logout-btn:hover {
-
-opacity: 0.9;
-
-}
-
-/* SEARCH BAR */
+/* SEARCH */
 .search-box {
 
 width: 100%;
@@ -108,17 +94,6 @@ font-size: 16px;
 margin-bottom: 15px;
 
 background: white;
-
-}
-
-/* CATEGORY */
-.category {
-
-font-weight: bold;
-
-margin: 15px 0 8px;
-
-color: #333;
 
 }
 
@@ -168,6 +143,55 @@ border: 1px solid #ccc;
 
 }
 
+/* ADD CUSTOM ITEM */
+.custom-box {
+
+background: white;
+
+padding: 12px;
+
+border-radius: 12px;
+
+margin-bottom: 15px;
+
+box-shadow:
+0 4px 10px rgba(0,0,0,0.08);
+
+display: flex;
+gap: 8px;
+
+}
+
+/* TEXT INPUT */
+.custom-box input {
+
+flex: 1;
+
+padding: 8px;
+
+border-radius: 6px;
+
+border: 1px solid #ccc;
+
+}
+
+/* ADD BUTTON */
+.add-btn {
+
+background: #3b82f6;
+
+color: white;
+
+border: none;
+
+padding: 8px 12px;
+
+border-radius: 8px;
+
+cursor: pointer;
+
+}
+
 /* SUBMIT BUTTON */
 .submit-btn {
 
@@ -197,12 +221,6 @@ cursor: pointer;
 
 }
 
-.submit-btn:hover {
-
-opacity: 0.9;
-
-}
-
 </style>
 
 </head>
@@ -222,10 +240,8 @@ opacity: 0.9;
 
 </div>
 
-<button
-class="logout-btn"
-onclick="logout()"
->
+<button class="logout-btn"
+onclick="logout()">
 
 Logout
 
@@ -239,21 +255,53 @@ Logout
 type="text"
 id="searchInput"
 class="search-box"
-placeholder="🔍 Search items (Rice, Oil...)"
+placeholder="🔍 Search items..."
 onkeyup="searchItems()"
 >
 
-<!-- CATEGORY 1 -->
+<!-- CUSTOM ITEM ADD -->
 
-<div class="category">
-Grains & Essentials
+<div class="custom-box">
+
+<input
+type="text"
+id="customItem"
+placeholder="Add new item"
+>
+
+<select id="customQty">
+
+<option>250 g</option>
+<option>500 g</option>
+<option>1 kg</option>
+<option>2 kg</option>
+<option>1 L</option>
+<option>2 L</option>
+
+</select>
+
+<button
+class="add-btn"
+onclick="addCustomItem()">
+
+Add
+
+</button>
+
 </div>
+
+<!-- ITEM LIST -->
+
+<div id="itemContainer">
 
 <div class="card item">
 
 <div class="item-left">
 
-<input type="checkbox" value="Rice">
+<input type="checkbox"
+value="Rice"
+onclick="resetSearch()">
+
 <span>Rice</span>
 
 </div>
@@ -263,7 +311,6 @@ Grains & Essentials
 <option>250 g</option>
 <option>500 g</option>
 <option>1 kg</option>
-<option>2 kg</option>
 
 </select>
 
@@ -273,16 +320,19 @@ Grains & Essentials
 
 <div class="item-left">
 
-<input type="checkbox" value="Wheat Flour">
-<span>Wheat Flour</span>
+<input type="checkbox"
+value="Oil"
+onclick="resetSearch()">
+
+<span>Oil</span>
 
 </div>
 
-<select id="Wheat Flour">
+<select id="Oil">
 
-<option>500 g</option>
-<option>1 kg</option>
-<option>2 kg</option>
+<option>250 ml</option>
+<option>500 ml</option>
+<option>1 L</option>
 
 </select>
 
@@ -292,7 +342,10 @@ Grains & Essentials
 
 <div class="item-left">
 
-<input type="checkbox" value="Sugar">
+<input type="checkbox"
+value="Sugar"
+onclick="resetSearch()">
+
 <span>Sugar</span>
 
 </div>
@@ -307,57 +360,13 @@ Grains & Essentials
 
 </div>
 
-<!-- CATEGORY 2 -->
-
-<div class="category">
-Liquids
-</div>
-
-<div class="card item">
-
-<div class="item-left">
-
-<input type="checkbox" value="Oil">
-<span>Oil</span>
-
-</div>
-
-<select id="Oil">
-
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
-<option>2 L</option>
-
-</select>
-
-</div>
-
-<div class="card item">
-
-<div class="item-left">
-
-<input type="checkbox" value="Milk">
-<span>Milk</span>
-
-</div>
-
-<select id="Milk">
-
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
-
-</select>
-
 </div>
 
 <!-- SUBMIT -->
 
 <button
 class="submit-btn"
-onclick="submitList()"
->
+onclick="submitList()">
 
 Submit List
 
@@ -367,9 +376,9 @@ Submit List
 
 <script>
 
-/* SEARCH FUNCTION */
+/* SEARCH */
 
-function searchItems() {
+function searchItems(){
 
 let input =
 document.getElementById("searchInput");
@@ -380,28 +389,97 @@ input.value.toLowerCase();
 let items =
 document.getElementsByClassName("item");
 
-for (let i = 0; i < items.length; i++) {
+for (let i=0;i<items.length;i++){
 
 let text =
 items[i].innerText.toLowerCase();
 
-if (text.includes(filter)) {
+if(text.includes(filter)){
 
-items[i].style.display = "";
-
-}
-
-else {
-
-items[i].style.display = "none";
+items[i].style.display="";
 
 }
+else{
+
+items[i].style.display="none";
 
 }
 
 }
 
-/* SUBMIT FUNCTION */
+}
+
+/* RESET SEARCH AFTER CHECK */
+
+function resetSearch(){
+
+document.getElementById(
+"searchInput"
+).value="";
+
+searchItems();
+
+}
+
+/* ADD CUSTOM ITEM */
+
+function addCustomItem(){
+
+let name =
+document.getElementById(
+"customItem"
+).value;
+
+let qty =
+document.getElementById(
+"customQty"
+).value;
+
+if(name==="") return;
+
+let container =
+document.getElementById(
+"itemContainer"
+);
+
+/* CREATE CARD */
+
+let card =
+document.createElement("div");
+
+card.className="card item";
+
+card.innerHTML=
+
+`
+<div class="item-left">
+
+<input type="checkbox"
+value="${name}"
+onclick="resetSearch()">
+
+<span>${name}</span>
+
+</div>
+
+<select id="${name}">
+
+<option>${qty}</option>
+
+</select>
+`;
+
+container.appendChild(card);
+
+/* CLEAR INPUT */
+
+document.getElementById(
+"customItem"
+).value="";
+
+}
+
+/* SUBMIT */
 
 function submitList(){
 
@@ -410,16 +488,16 @@ document.querySelectorAll(
 'input[type="checkbox"]:checked'
 );
 
-let list = [];
+let list=[];
 
 items.forEach(function(item){
 
-let name = item.value;
+let name=item.value;
 
-let qty =
+let qty=
 document.getElementById(name).value;
 
-list.push(name + " - " + qty);
+list.push(name+" - "+qty);
 
 });
 
@@ -428,15 +506,15 @@ localStorage.setItem(
 JSON.stringify(list)
 );
 
-alert("List Submitted Successfully!");
+alert("List Submitted!");
 
 }
 
-/* LOGOUT FUNCTION */
+/* LOGOUT */
 
 function logout(){
 
-window.location.href =
+window.location.href=
 "index.html";
 
 }
