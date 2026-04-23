@@ -2,191 +2,14 @@
 <html>
 
 <head>
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet"
+href="style.css">
+
 <title>Shoba Provision List</title>
-<style>
-
-/* RESET */
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-/* BODY */
-
-body{
-
-font-family:'Segoe UI',sans-serif;
-
-background:linear-gradient(
-135deg,
-#dbeafe,
-#fef9c3,
-#dcfce7
-);
-
-padding:15px;
-
-}
-
-/* CONTAINER */
-
-.container{
-max-width:500px;
-margin:auto;
-}
-
-/* HEADER */
-
-.header{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-margin-bottom:15px;
-}
-
-/* LOGOUT */
-
-.logout-btn{
-
-background:#6b7280;
-color:white;
-
-border:none;
-
-padding:8px 14px;
-
-border-radius:8px;
-
-cursor:pointer;
-}
-
-/* SEARCH */
-
-.search-box{
-
-width:100%;
-padding:12px;
-
-border-radius:10px;
-
-border:1px solid #ccc;
-
-margin-bottom:12px;
-
-}
-
-/* CATEGORY */
-
-.category{
-
-font-weight:bold;
-
-margin-top:18px;
-
-color:#333;
-
-}
-
-/* CARD */
-
-.card{
-
-background:white;
-
-padding:14px;
-
-margin-bottom:10px;
-
-border-radius:12px;
-
-box-shadow:
-0 4px 10px rgba(0,0,0,0.08);
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-}
-
-/* CUSTOM BOX */
-
-.custom-box{
-
-background:white;
-
-padding:12px;
-
-border-radius:12px;
-
-margin-bottom:12px;
-
-display:flex;
-gap:6px;
-
-}
-
-.custom-box input{
-
-padding:8px;
-border-radius:6px;
-border:1px solid #ccc;
-
-}
-
-/* BUTTON */
-
-.add-btn{
-
-background:#3b82f6;
-color:white;
-
-border:none;
-
-padding:8px 12px;
-
-border-radius:8px;
-
-cursor:pointer;
-
-}
-
-/* SUBMIT */
-
-.submit-btn{
-
-width:100%;
-
-padding:14px;
-
-margin-top:15px;
-
-background:linear-gradient(
-135deg,
-#22c55e,
-#16a34a
-);
-
-color:white;
-
-border:none;
-
-border-radius:10px;
-
-font-weight:bold;
-
-cursor:pointer;
-
-}
-
-</style>
 
 </head>
 
@@ -311,7 +134,7 @@ bulk:[
 ],
 
 small:[
-"50 g","100 g","250 g"
+"50 g","100 g","200 g"
 ],
 
 packet:[
@@ -395,11 +218,13 @@ container.appendChild(card);
 
 }
 
-/* AUTO CATEGORY DETECTION */
+/* IMPROVED CATEGORY DETECTION */
 
 function detectCategory(qty){
 
-qty=qty.toLowerCase();
+qty = qty.toLowerCase().trim();
+
+/* LIQUID */
 
 if(qty.includes("ml") ||
    qty.includes("l")){
@@ -408,11 +233,15 @@ return "liquid";
 
 }
 
+/* SACHET */
+
 if(qty.includes("sachet")){
 
 return "sachet";
 
 }
+
+/* PACKET */
 
 if(qty.includes("packet") ||
    qty.includes("piece")){
@@ -421,18 +250,40 @@ return "packet";
 
 }
 
+/* KG ALWAYS BULK */
+
+if(qty.includes("kg")){
+
+return "bulk";
+
+}
+
+/* GRAMS LOGIC */
+
 if(qty.includes("g")){
 
-if(qty.includes("50") ||
-   qty.includes("100")){
+let number =
+parseFloat(qty);
+
+/* BELOW 250g → SMALL */
+
+if(number < 250){
 
 return "small";
 
 }
 
+/* 250g AND ABOVE → BULK */
+
+else{
+
 return "bulk";
 
 }
+
+}
+
+/* DEFAULT */
 
 return "bulk";
 
@@ -443,10 +294,12 @@ return "bulk";
 function addCustomItem(){
 
 let name=
-document.getElementById("customItem").value.trim();
+document.getElementById("customItem")
+.value.trim();
 
 let qty=
-document.getElementById("customQty").value.trim();
+document.getElementById("customQty")
+.value.trim();
 
 if(name==="" || qty==="") return;
 
@@ -461,7 +314,7 @@ items[category].push(name);
 
 }
 
-/* SAVE */
+/* SAVE ITEMS */
 
 localStorage.setItem(
 "categoryItems",
@@ -479,8 +332,15 @@ qty
 
 loadItems();
 
-document.getElementById("customItem").value="";
-document.getElementById("customQty").value="";
+/* CLEAR INPUT */
+
+document.getElementById(
+"customItem"
+).value="";
+
+document.getElementById(
+"customQty"
+).value="";
 
 }
 
@@ -546,11 +406,11 @@ let now=new Date();
 
 history.push({
 
-time:now.toLocaleString(),
+time: now.toLocaleString(),
 
-items:list,
+items: list,
 
-status:"pending"
+status: "pending"
 
 });
 
@@ -559,7 +419,7 @@ localStorage.setItem(
 JSON.stringify(history)
 );
 
-/* REDIRECT TO THANK YOU PAGE */
+/* REDIRECT */
 
 window.location.href="thankyou.html";
 
