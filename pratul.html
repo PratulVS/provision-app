@@ -61,6 +61,7 @@ padding:15px;
 margin-bottom:10px;
 border-radius:12px;
 position:relative;
+cursor:pointer;
 }
 
 .new-list{
@@ -158,6 +159,39 @@ onclick="goHome()">
 
 <div id="listContainer"></div>
 
+<div id="itemView"
+class="hidden">
+
+<h3 id="listTime"></h3>
+
+<div id="items"></div>
+
+<br>
+
+<input
+type="text"
+id="shopName"
+placeholder="Shop Name">
+
+<br><br>
+
+<input
+type="number"
+id="amountPaid"
+placeholder="Total Amount">
+
+<br><br>
+
+<button
+class="submit-btn"
+onclick="finishList()">
+
+Finish Purchase
+
+</button>
+
+</div>
+
 </div>
 
 <!-- MANAGE ITEMS -->
@@ -210,6 +244,7 @@ onclick="saveItems()">
 function showView(){
 
 document.getElementById("mainMenu").style.display="none";
+
 document.getElementById("viewSection")
 .classList.remove("hidden");
 
@@ -220,6 +255,7 @@ loadLists();
 function showManage(){
 
 document.getElementById("mainMenu").style.display="none";
+
 document.getElementById("manageSection")
 .classList.remove("hidden");
 
@@ -258,13 +294,65 @@ document.createElement("div");
 
 card.className="card";
 
+if(data.status==="pending")
+card.classList.add("new-list");
+
+if(data.status==="completed")
+card.classList.add("completed-list");
+
 card.innerHTML=
 
 `
 <b>${data.time}</b>
 <br>
 Items: ${data.items.length}
+<br>
+Shop: ${data.shop || "-"}
+<br>
+Amount: ₹${data.amount || "-"}
 `;
+
+/* OPEN LIST */
+
+card.onclick=function(){
+
+openList(docSnap.id,data);
+
+};
+
+/* DELETE BUTTON */
+
+let delBtn=
+document.createElement("button");
+
+delBtn.innerText="🗑";
+
+delBtn.className="delete-btn";
+
+delBtn.onclick=function(e){
+
+e.stopPropagation();
+
+deleteList(docSnap.id);
+
+};
+
+card.appendChild(delBtn);
+
+/* GREEN TICK */
+
+if(data.status==="completed"){
+
+let tick=
+document.createElement("div");
+
+tick.className="tick";
+
+tick.innerHTML="✔";
+
+card.appendChild(tick);
+
+}
 
 container.appendChild(card);
 
@@ -272,7 +360,87 @@ container.appendChild(card);
 
 }
 
-/* LOAD ITEMS FROM FIREBASE */
+/* OPEN LIST */
+
+function openList(id,data){
+
+window.currentDoc=id;
+
+document.getElementById("itemView")
+.classList.remove("hidden");
+
+document.getElementById("listTime")
+.innerText=data.time;
+
+let box=
+document.getElementById("items");
+
+box.innerHTML="";
+
+data.items.forEach(item=>{
+
+let div=
+document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+
+`
+<input type="checkbox">
+${item}
+`;
+
+box.appendChild(div);
+
+});
+
+}
+
+/* FINISH LIST */
+
+async function finishList(){
+
+let shop=
+document.getElementById("shopName").value;
+
+let amount=
+document.getElementById("amountPaid").value;
+
+await updateDoc(
+doc(db,"provisionLists",
+window.currentDoc),
+{
+
+status:"completed",
+shop:shop,
+amount:amount
+
+}
+
+);
+
+alert("Purchase Completed");
+
+location.reload();
+
+}
+
+/* DELETE LIST */
+
+async function deleteList(id){
+
+if(!confirm("Delete list?")) return;
+
+await deleteDoc(
+doc(db,"provisionLists",id)
+);
+
+location.reload();
+
+}
+
+/* LOAD ITEMS */
 
 async function loadItems(){
 
@@ -301,8 +469,6 @@ sachet:["Shampoo"]
 };
 
 }
-
-/* DISPLAY */
 
 let box=
 document.getElementById("itemsBox");
@@ -426,8 +592,6 @@ newItems[cat].push(name);
 }
 
 });
-
-/* SAVE TO FIREBASE */
 
 await setDoc(
 doc(db,"categoryItems","main"),
