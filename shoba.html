@@ -8,15 +8,16 @@
 
 /* RESET */
 * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 /* BODY */
+
 body {
 
-font-family: 'Segoe UI', sans-serif;
+font-family:'Segoe UI',sans-serif;
 
 background: linear-gradient(
 135deg,
@@ -25,199 +26,211 @@ background: linear-gradient(
 #dcfce7
 );
 
-min-height: 100vh;
+padding:15px;
 
-padding: 15px;
+min-height:100vh;
+
 }
 
 /* CONTAINER */
+
 .container {
 
-max-width: 500px;
-margin: auto;
+max-width:500px;
+margin:auto;
 
 }
 
 /* HEADER */
+
 .header {
 
-display: flex;
-justify-content: space-between;
-align-items: center;
+display:flex;
+justify-content:space-between;
+align-items:center;
 
-margin-bottom: 15px;
+margin-bottom:15px;
 
 }
 
-.header-title h2 {
-color: #333;
-margin-bottom: 3px;
-}
+/* LOGOUT */
 
-.header-title p {
-color: #555;
-font-size: 14px;
-}
-
-/* LOGOUT BUTTON */
 .logout-btn {
 
-padding: 8px 14px;
+background:#6b7280;
+color:white;
 
-background: #6b7280;
+border:none;
 
-color: white;
+padding:8px 14px;
 
-border: none;
+border-radius:8px;
 
-border-radius: 8px;
-
-cursor: pointer;
-
-font-size: 14px;
+cursor:pointer;
 
 }
 
 /* SEARCH */
+
 .search-box {
 
-width: 100%;
+width:100%;
 
-padding: 12px;
+padding:12px;
 
-border-radius: 10px;
+border-radius:10px;
 
-border: 1px solid #ccc;
+border:1px solid #ccc;
 
-font-size: 16px;
+font-size:16px;
 
-margin-bottom: 15px;
+margin-bottom:15px;
 
-background: white;
+background:white;
 
 }
 
 /* CARD */
+
 .card {
 
-background: white;
+background:white;
 
-padding: 14px;
+padding:14px;
 
-margin-bottom: 10px;
+margin-bottom:10px;
 
-border-radius: 12px;
+border-radius:12px;
 
 box-shadow:
 0 4px 10px rgba(0,0,0,0.08);
 
-display: flex;
+display:flex;
 
-justify-content: space-between;
+justify-content:space-between;
 
-align-items: center;
+align-items:center;
 
 }
 
-/* LEFT SIDE */
+/* LEFT */
+
 .item-left {
 
-display: flex;
+display:flex;
 
-align-items: center;
+align-items:center;
 
-gap: 10px;
+gap:10px;
 
-font-size: 16px;
+font-size:16px;
 
 }
 
 /* DROPDOWN */
+
 select {
 
-padding: 6px;
+padding:6px;
 
-border-radius: 6px;
+border-radius:6px;
 
-border: 1px solid #ccc;
+border:1px solid #ccc;
 
 }
 
-/* ADD CUSTOM ITEM */
+/* COUNT DISPLAY */
+
+.count-box {
+
+text-align:center;
+
+margin-bottom:10px;
+
+font-weight:bold;
+
+color:#333;
+
+}
+
+/* CUSTOM ITEM */
+
 .custom-box {
 
-background: white;
+display:flex;
 
-padding: 12px;
+gap:8px;
 
-border-radius: 12px;
+background:white;
 
-margin-bottom: 15px;
+padding:12px;
+
+border-radius:12px;
+
+margin-bottom:12px;
 
 box-shadow:
 0 4px 10px rgba(0,0,0,0.08);
 
-display: flex;
-gap: 8px;
-
 }
 
-/* TEXT INPUT */
 .custom-box input {
 
-flex: 1;
+flex:1;
 
-padding: 8px;
+padding:8px;
 
-border-radius: 6px;
+border-radius:6px;
 
-border: 1px solid #ccc;
+border:1px solid #ccc;
 
 }
 
 /* ADD BUTTON */
+
 .add-btn {
 
-background: #3b82f6;
+background:#3b82f6;
 
-color: white;
+color:white;
 
-border: none;
+border:none;
 
-padding: 8px 12px;
+padding:8px 12px;
 
-border-radius: 8px;
+border-radius:8px;
 
-cursor: pointer;
+cursor:pointer;
 
 }
 
-/* SUBMIT BUTTON */
+/* SUBMIT */
+
 .submit-btn {
 
-width: 100%;
+width:100%;
 
-padding: 14px;
+padding:14px;
 
-font-size: 16px;
+font-size:16px;
 
-margin-top: 10px;
+margin-top:10px;
 
-background: linear-gradient(
+background:linear-gradient(
 135deg,
 #22c55e,
 #16a34a
 );
 
-color: white;
+color:white;
 
-border: none;
+border:none;
 
-border-radius: 10px;
+border-radius:10px;
 
-font-weight: bold;
+font-weight:bold;
 
-cursor: pointer;
+cursor:pointer;
 
 }
 
@@ -233,12 +246,7 @@ cursor: pointer;
 
 <div class="header">
 
-<div class="header-title">
-
 <h2>Shoba Dashboard</h2>
-<p>Select household items</p>
-
-</div>
 
 <button class="logout-btn"
 onclick="logout()">
@@ -259,7 +267,15 @@ placeholder="🔍 Search items..."
 onkeyup="searchItems()"
 >
 
-<!-- CUSTOM ITEM ADD -->
+<!-- ITEM COUNT -->
+
+<div class="count-box">
+
+Items Selected: <span id="itemCount">0</span>
+
+</div>
+
+<!-- CUSTOM ITEM -->
 
 <div class="custom-box">
 
@@ -271,12 +287,18 @@ placeholder="Add new item"
 
 <select id="customQty">
 
+<option>1 piece</option>
+<option>2 pieces</option>
+<option>5 pieces</option>
+<option>10 pieces</option>
+
 <option>250 g</option>
 <option>500 g</option>
 <option>1 kg</option>
-<option>2 kg</option>
+
+<option>250 ml</option>
+<option>500 ml</option>
 <option>1 L</option>
-<option>2 L</option>
 
 </select>
 
@@ -290,79 +312,9 @@ Add
 
 </div>
 
-<!-- ITEM LIST -->
+<!-- ITEMS -->
 
-<div id="itemContainer">
-
-<div class="card item">
-
-<div class="item-left">
-
-<input type="checkbox"
-value="Rice"
-onclick="resetSearch()">
-
-<span>Rice</span>
-
-</div>
-
-<select id="Rice">
-
-<option>250 g</option>
-<option>500 g</option>
-<option>1 kg</option>
-
-</select>
-
-</div>
-
-<div class="card item">
-
-<div class="item-left">
-
-<input type="checkbox"
-value="Oil"
-onclick="resetSearch()">
-
-<span>Oil</span>
-
-</div>
-
-<select id="Oil">
-
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
-
-</select>
-
-</div>
-
-<div class="card item">
-
-<div class="item-left">
-
-<input type="checkbox"
-value="Sugar"
-onclick="resetSearch()">
-
-<span>Sugar</span>
-
-</div>
-
-<select id="Sugar">
-
-<option>250 g</option>
-<option>500 g</option>
-<option>1 kg</option>
-
-</select>
-
-</div>
-
-</div>
-
-<!-- SUBMIT -->
+<div id="itemContainer"></div>
 
 <button
 class="submit-btn"
@@ -375,6 +327,72 @@ Submit List
 </div>
 
 <script>
+
+/* LOAD ITEMS */
+
+function loadItems(){
+
+let savedItems =
+JSON.parse(
+localStorage.getItem("savedItems")
+) || [
+
+"Rice",
+"Oil",
+"Sugar",
+"Milk"
+
+];
+
+let container =
+document.getElementById(
+"itemContainer"
+);
+
+container.innerHTML="";
+
+savedItems.forEach(function(name){
+
+let card =
+document.createElement("div");
+
+card.className="card item";
+
+card.innerHTML=
+
+`
+<div class="item-left">
+
+<input type="checkbox"
+value="${name}"
+onclick="updateCount();resetSearch()">
+
+<span>${name}</span>
+
+</div>
+
+<select id="${name}">
+
+<option>1 piece</option>
+<option>2 pieces</option>
+<option>5 pieces</option>
+
+<option>250 g</option>
+<option>500 g</option>
+<option>1 kg</option>
+
+<option>250 ml</option>
+<option>500 ml</option>
+<option>1 L</option>
+
+</select>
+`;
+
+container.appendChild(card);
+
+});
+
+}
 
 /* SEARCH */
 
@@ -389,27 +407,19 @@ input.value.toLowerCase();
 let items =
 document.getElementsByClassName("item");
 
-for (let i=0;i<items.length;i++){
+for(let i=0;i<items.length;i++){
 
 let text =
 items[i].innerText.toLowerCase();
 
-if(text.includes(filter)){
-
-items[i].style.display="";
-
-}
-else{
-
-items[i].style.display="none";
+items[i].style.display =
+text.includes(filter) ? "" : "none";
 
 }
 
 }
 
-}
-
-/* RESET SEARCH AFTER CHECK */
+/* RESET SEARCH */
 
 function resetSearch(){
 
@@ -421,6 +431,21 @@ searchItems();
 
 }
 
+/* UPDATE COUNT */
+
+function updateCount(){
+
+let count =
+document.querySelectorAll(
+'input[type="checkbox"]:checked'
+).length;
+
+document.getElementById(
+"itemCount"
+).innerText=count;
+
+}
+
 /* ADD CUSTOM ITEM */
 
 function addCustomItem(){
@@ -428,54 +453,31 @@ function addCustomItem(){
 let name =
 document.getElementById(
 "customItem"
-).value;
-
-let qty =
-document.getElementById(
-"customQty"
-).value;
+).value.trim();
 
 if(name==="") return;
 
-let container =
-document.getElementById(
-"itemContainer"
+let savedItems =
+JSON.parse(
+localStorage.getItem("savedItems")
+) || [];
+
+if(!savedItems.includes(name)){
+
+savedItems.push(name);
+
+localStorage.setItem(
+"savedItems",
+JSON.stringify(savedItems)
 );
 
-/* CREATE CARD */
-
-let card =
-document.createElement("div");
-
-card.className="card item";
-
-card.innerHTML=
-
-`
-<div class="item-left">
-
-<input type="checkbox"
-value="${name}"
-onclick="resetSearch()">
-
-<span>${name}</span>
-
-</div>
-
-<select id="${name}">
-
-<option>${qty}</option>
-
-</select>
-`;
-
-container.appendChild(card);
-
-/* CLEAR INPUT */
+}
 
 document.getElementById(
 "customItem"
 ).value="";
+
+loadItems();
 
 }
 
@@ -483,14 +485,14 @@ document.getElementById(
 
 function submitList(){
 
-let items =
+let checked =
 document.querySelectorAll(
 'input[type="checkbox"]:checked'
 );
 
 let list=[];
 
-items.forEach(function(item){
+checked.forEach(function(item){
 
 let name=item.value;
 
@@ -501,12 +503,36 @@ list.push(name+" - "+qty);
 
 });
 
+let history =
+JSON.parse(
+localStorage.getItem("allLists")
+) || [];
+
+let now=new Date();
+
+let time=
+now.toLocaleString();
+
+history.push({
+
+time:time,
+
+items:list,
+
+status:"pending",
+
+amount:""
+
+});
+
 localStorage.setItem(
-"provisionList",
-JSON.stringify(list)
+"allLists",
+JSON.stringify(history)
 );
 
-alert("List Submitted!");
+/* AUTO LOGOUT */
+
+window.location.href="index.html";
 
 }
 
@@ -514,10 +540,13 @@ alert("List Submitted!");
 
 function logout(){
 
-window.location.href=
-"index.html";
+window.location.href="index.html";
 
 }
+
+/* INITIAL LOAD */
+
+window.onload=loadItems;
 
 </script>
 
