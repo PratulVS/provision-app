@@ -85,7 +85,7 @@ margin-bottom:12px;
 
 font-weight:bold;
 
-margin-top:15px;
+margin-top:18px;
 
 color:#333;
 
@@ -113,7 +113,7 @@ justify-content:space-between;
 align-items:center;
 }
 
-/* CUSTOM */
+/* CUSTOM BOX */
 
 .custom-box{
 
@@ -163,7 +163,7 @@ width:100%;
 
 padding:14px;
 
-margin-top:10px;
+margin-top:15px;
 
 background:linear-gradient(
 135deg,
@@ -285,9 +285,7 @@ sachet:["Shampoo"]
 /* LOAD SAVED ITEMS */
 
 let savedItems=
-localStorage.getItem(
-"categoryItems"
-);
+localStorage.getItem("categoryItems");
 
 if(savedItems){
 
@@ -331,9 +329,7 @@ function loadItems(){
 for(let category in items){
 
 let container=
-document.getElementById(
-category+"List"
-);
+document.getElementById(category+"List");
 
 container.innerHTML="";
 
@@ -344,9 +340,7 @@ let selectOptions="";
 /* CUSTOM QUANTITY */
 
 let savedQty=
-localStorage.getItem(
-name+"_qty"
-);
+localStorage.getItem(name+"_qty");
 
 if(savedQty){
 
@@ -446,14 +440,10 @@ return "bulk";
 function addCustomItem(){
 
 let name=
-document.getElementById(
-"customItem"
-).value.trim();
+document.getElementById("customItem").value.trim();
 
 let qty=
-document.getElementById(
-"customQty"
-).value.trim();
+document.getElementById("customQty").value.trim();
 
 if(name==="" || qty==="") return;
 
@@ -486,13 +476,8 @@ qty
 
 loadItems();
 
-document.getElementById(
-"customItem"
-).value="";
-
-document.getElementById(
-"customQty"
-).value="";
+document.getElementById("customItem").value="";
+document.getElementById("customQty").value="";
 
 }
 
@@ -501,14 +486,11 @@ document.getElementById(
 function searchItems(){
 
 let filter=
-document.getElementById(
-"searchInput"
-).value.toLowerCase();
+document.getElementById("searchInput")
+.value.toLowerCase();
 
 let itemsList=
-document.getElementsByClassName(
-"item"
-);
+document.getElementsByClassName("item");
 
 for(let i=0;i<itemsList.length;i++){
 
@@ -522,7 +504,7 @@ text.includes(filter)?"":"none";
 
 }
 
-/* SUBMIT */
+/* SUBMIT LIST */
 
 function submitList(){
 
@@ -543,6 +525,14 @@ document.getElementById(name).value;
 list.push(name+" - "+qty);
 
 });
+
+if(list.length===0){
+
+alert("Please select at least one item.");
+
+return;
+
+}
 
 let history=
 JSON.parse(
@@ -566,9 +556,9 @@ localStorage.setItem(
 JSON.stringify(history)
 );
 
-/* AUTO LOGOUT */
+/* REDIRECT TO THANK YOU PAGE */
 
-window.location.href="index.html";
+window.location.href="thankyou.html";
 
 }
 
