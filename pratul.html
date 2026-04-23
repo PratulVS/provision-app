@@ -1,37 +1,77 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Shoba Provision List</title>
+<title>Pratul Dashboard</title>
 
 <style>
 
+/* Page Background */
 body {
-font-family: Arial;
-margin: 20px;
-background: #f5f5f5;
+font-family: Arial, sans-serif;
+margin: 0;
+padding: 20px;
+
+/* Attractive gradient background */
+background: linear-gradient(
+135deg,
+#dbeafe,
+#fef9c3,
+#dcfce7
+);
+
+min-height: 100vh;
 }
 
-.card {
+/* Title */
+h2 {
+text-align: center;
+color: #333;
+margin-bottom: 20px;
+}
+
+/* List container */
+#list {
+list-style: none;
+padding: 0;
+}
+
+/* Each list item */
+li {
 background: white;
-padding: 15px;
-margin-bottom: 10px;
-border-radius: 10px;
-box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+padding: 14px;
+margin-bottom: 12px;
+border-radius: 12px;
+
+box-shadow:
+0 4px 10px rgba(0,0,0,0.1);
+
+font-size: 16px;
 }
 
+/* Checkbox spacing */
+input[type="checkbox"] {
+margin-right: 10px;
+}
+
+/* Button style */
 button {
-padding: 12px;
+padding: 14px;
 font-size: 16px;
-background: green;
+
+background: linear-gradient(
+135deg,
+#ef4444,
+#dc2626
+);
+
 color: white;
 border: none;
-border-radius: 8px;
+border-radius: 10px;
 width: 100%;
-}
 
-select {
-margin-left: 10px;
-padding: 5px;
+font-weight: bold;
+margin-top: 15px;
 }
 
 </style>
@@ -40,93 +80,77 @@ padding: 5px;
 
 <body>
 
-<h2>Shoba - Provision List</h2>
+<h2>Pratul - Provision List</h2>
 
-<div class="card">
-<input type="checkbox" value="Rice"> Rice
+<ul id="list"></ul>
 
-<select id="Rice">
-<option>250 g</option>
-<option>500 g</option>
-<option>1 kg</option>
-<option>2 kg</option>
-<option>5 kg</option>
-</select>
-</div>
-
-<div class="card">
-<input type="checkbox" value="Oil"> Oil
-
-<select id="Oil">
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
-<option>2 L</option>
-<option>5 L</option>
-</select>
-</div>
-
-<div class="card">
-<input type="checkbox" value="Sugar"> Sugar
-
-<select id="Sugar">
-<option>250 g</option>
-<option>500 g</option>
-<option>1 kg</option>
-<option>2 kg</option>
-<option>5 kg</option>
-</select>
-</div>
-
-<div class="card">
-<input type="checkbox" value="Milk"> Milk
-
-<select id="Milk">
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
-<option>2 L</option>
-</select>
-</div>
-
-<br>
-
-<button onclick="submitList()">
-Submit List
+<button onclick="clearList()">
+Mark Complete
 </button>
 
 <script>
 
-function submitList(){
+/* Load saved list */
+function loadList(){
 
-let items =
-document.querySelectorAll(
-'input[type="checkbox"]:checked'
+let data =
+JSON.parse(
+localStorage.getItem("provisionList")
 );
 
-let list = [];
+let ul =
+document.getElementById("list");
 
-items.forEach(function(item){
+/* Clear previous items */
+ul.innerHTML = "";
 
-let name = item.value;
+if(data){
 
-let qty =
-document.getElementById(name).value;
+data.forEach(function(item){
 
-list.push(name + " - " + qty);
+let li =
+document.createElement("li");
+
+/* Add checkbox */
+let checkbox =
+document.createElement("input");
+
+checkbox.type = "checkbox";
+
+/* Add text */
+let text =
+document.createTextNode(item);
+
+/* Add checkbox + text */
+li.appendChild(checkbox);
+li.appendChild(text);
+
+ul.appendChild(li);
 
 });
 
-localStorage.setItem(
-"provisionList",
-JSON.stringify(list)
-);
-
-alert("List Submitted Successfully!");
+}
 
 }
+
+/* Clear completed list */
+function clearList(){
+
+localStorage.removeItem(
+"provisionList"
+);
+
+alert("List Completed!");
+
+location.reload();
+
+}
+
+/* Run when page loads */
+window.onload = loadList;
 
 </script>
 
 </body>
+
 </html>
