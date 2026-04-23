@@ -1,142 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet"
+href="style.css">
+
 <title>Pratul Dashboard</title>
-
-<style>
-
-/* BODY */
-
-body {
-
-font-family:'Segoe UI',sans-serif;
-
-background: linear-gradient(
-135deg,
-#dbeafe,
-#fef9c3,
-#dcfce7
-);
-
-height:100vh;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-}
-
-/* MAIN BOX */
-
-.container {
-
-background:white;
-
-padding:30px;
-
-border-radius:15px;
-
-width:320px;
-
-box-shadow:
-0 4px 15px rgba(0,0,0,0.1);
-
-text-align:center;
-
-}
-
-/* BUTTONS */
-
-.main-btn {
-
-width:100%;
-
-padding:14px;
-
-margin:10px 0;
-
-border:none;
-
-border-radius:10px;
-
-font-weight:bold;
-
-cursor:pointer;
-
-font-size:16px;
-
-}
-
-/* SHoba Button */
-
-.shoba-btn {
-
-background:#22c55e;
-color:white;
-
-}
-
-/* Pratul Button */
-
-.pratul-btn {
-
-background:#3b82f6;
-color:white;
-
-}
-
-/* LOGIN FORM */
-
-.login-form {
-
-margin-top:15px;
-
-display:none;
-
-}
-
-/* INPUT */
-
-input {
-
-width:100%;
-
-padding:10px;
-
-margin:6px 0;
-
-border-radius:8px;
-
-border:1px solid #ccc;
-
-}
-
-/* LOGIN BUTTON */
-
-.login-btn {
-
-background:#2563eb;
-color:white;
-
-}
-
-/* ERROR */
-
-.error {
-
-color:red;
-
-font-size:14px;
-
-margin-top:5px;
-
-}
-
-</style>
 
 </head>
 
@@ -144,55 +17,46 @@ margin-top:5px;
 
 <div class="container">
 
-<h2>Family Provisions</h2>
+<div class="header">
 
-<!-- SHOBA BUTTON -->
+<h2>Pratul Dashboard</h2>
 
 <button
-class="main-btn shoba-btn"
-onclick="goShoba()">
+class="logout-btn"
+onclick="logout()">
 
-👩 Shoba Dashboard
+Logout
 
 </button>
 
-<!-- PRATUL BUTTON -->
+</div>
 
-<button
-class="main-btn pratul-btn"
-onclick="showLogin()">
+<div id="listHistory"></div>
 
-👨 Pratul Dashboard
+<div id="itemView"
+style="display:none">
 
-</button>
+<h3 id="listTime"></h3>
 
-<!-- LOGIN FORM -->
-
-<div
-class="login-form"
-id="loginForm">
+<div id="items"></div>
 
 <input
 type="text"
-id="username"
-placeholder="Username">
+id="shopName"
+placeholder="Shop Name">
 
 <input
-type="password"
-id="password"
-placeholder="Password">
+type="number"
+id="amountPaid"
+placeholder="Total Amount">
 
 <button
-class="main-btn login-btn"
-onclick="login()">
+class="submit-btn"
+onclick="finishList()">
 
-Login as Pratul
+Finish Purchase
 
 </button>
-
-<p
-id="errorMsg"
-class="error"></p>
 
 </div>
 
@@ -200,74 +64,178 @@ class="error"></p>
 
 <script>
 
-/* GO SHOBA */
-
-function goShoba(){
-
-window.location.href="shoba.html";
-
-}
-
-/* SHOW LOGIN */
-
-function showLogin(){
-
-document.getElementById(
-"loginForm"
-).style.display="block";
-
-}
-
-/* LOGIN FUNCTION */
-
-function login(){
-
-let user =
-document.getElementById("username").value;
-
-let pass =
-document.getElementById("password").value;
-
-/* USERNAME */
-
-let validUser =
-"vspratul2004@gmail.com";
-
-/* PASSWORDS */
-
-let password1 =
-"Pratul123!!!";
-
-let password2 =
-"9944352375";
-
 /* LOGIN CHECK */
 
 if(
-user===validUser &&
-(pass===password1 || pass===password2)
+localStorage.getItem("isLoggedIn")
+!=="true"
 ){
 
+window.location.href="index.html";
+
+}
+
+/* LOAD HISTORY */
+
+function loadHistory(){
+
+let history=
+JSON.parse(
+localStorage.getItem("allLists")
+)||[];
+
+let container=
+document.getElementById(
+"listHistory"
+);
+
+container.innerHTML="";
+
+history
+.slice()
+.reverse()
+.forEach(function(list,index){
+
+let card=
+document.createElement("div");
+
+card.className="card";
+
+card.innerHTML=
+
+`
+<b>${list.time}</b>
+<br>
+Items: ${list.items.length}
+`;
+
+card.onclick=function(){
+
+openList(
+history.length-1-index
+);
+
+};
+
+container.appendChild(card);
+
+});
+
+}
+
+/* OPEN LIST */
+
+function openList(index){
+
+let history=
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+let list=
+history[index];
+
+document.getElementById(
+"listHistory"
+).style.display="none";
+
+document.getElementById(
+"itemView"
+).style.display="block";
+
+document.getElementById(
+"listTime"
+).innerText=list.time;
+
+let itemsBox=
+document.getElementById(
+"items"
+);
+
+itemsBox.innerHTML="";
+
+list.items.forEach(item=>{
+
+let div=
+document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+
+`
+<input type="checkbox">
+${item}
+`;
+
+itemsBox.appendChild(div);
+
+});
+
+}
+
+/* FINISH */
+
+function finishList(){
+
+let shop=
+document.getElementById(
+"shopName"
+).value;
+
+let amount=
+document.getElementById(
+"amountPaid"
+).value;
+
+let history=
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+for(let i=history.length-1;i>=0;i--){
+
+if(history[i].status==="pending"){
+
+history[i].status="completed";
+
+history[i].shop=shop;
+
+history[i].amount=amount;
+
+break;
+
+}
+
+}
+
 localStorage.setItem(
-"isLoggedIn",
-"true"
+"allLists",
+JSON.stringify(history)
+);
+
+alert("Purchase Completed!");
+
+location.reload();
+
+}
+
+/* LOGOUT */
+
+function logout(){
+
+localStorage.removeItem(
+"isLoggedIn"
 );
 
 window.location.href=
-"pratul.html";
+"index.html";
 
 }
 
-else{
+/* LOAD */
 
-document.getElementById(
-"errorMsg"
-).innerText=
-"Invalid Username or Password";
-
-}
-
-}
+window.onload=loadHistory;
 
 </script>
 
