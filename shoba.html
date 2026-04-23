@@ -21,8 +21,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getFirestore,
 collection,
-addDoc,
-getDocs
+addDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -43,8 +42,6 @@ messagingSenderId: "533219133266",
 appId: "1:533219133266:web:6a0b1846fd969a4abb5c8b"
 
 };
-
-/* Initialize */
 
 const app = initializeApp(firebaseConfig);
 
@@ -146,6 +143,19 @@ sachet:["Shampoo"]
 
 };
 
+/* LOAD SAVED ITEMS FROM PRATUL */
+
+let savedItems =
+JSON.parse(
+localStorage.getItem("categoryItems")
+);
+
+if(savedItems){
+
+defaultItems = savedItems;
+
+}
+
 /* LOAD ITEMS */
 
 window.onload=function(){
@@ -154,7 +164,7 @@ loadItems();
 
 };
 
-/* LOAD ITEMS FUNCTION */
+/* DISPLAY ITEMS */
 
 function loadItems(){
 
@@ -188,7 +198,7 @@ section.innerHTML += createItemRow(item,key);
 
 }
 
-/* CREATE ROW */
+/* CREATE ITEM ROW */
 
 function createItemRow(item,category){
 
@@ -318,7 +328,7 @@ document.getElementById("customQty").value;
 
 if(name==="") return;
 
-/* AUTO CATEGORY */
+/* CATEGORY DETECTION */
 
 let category="small";
 
@@ -336,9 +346,12 @@ category="bulk";
 
 }
 
-/* ADD TO CATEGORY */
-
 defaultItems[category].push(name);
+
+localStorage.setItem(
+"categoryItems",
+JSON.stringify(defaultItems)
+);
 
 loadItems();
 
@@ -370,7 +383,7 @@ name.includes(text)
 
 }
 
-/* SUBMIT LIST TO FIREBASE */
+/* SUBMIT LIST */
 
 async function submitList(){
 
@@ -399,8 +412,6 @@ alert("Select at least one item");
 return;
 
 }
-
-/* SAVE TO FIREBASE */
 
 await addDoc(
 collection(db,"provisionLists"),
