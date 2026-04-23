@@ -5,9 +5,6 @@
 
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-
-<meta name="theme-color" content="#22c55e">
 
 <link rel="stylesheet"
 href="style.css">
@@ -16,34 +13,86 @@ href="style.css">
 
 <style>
 
-/* STATUS COLORS */
-
-.new-list{
-border-left:6px solid red;
-}
-
-.completed-list{
-border-left:6px solid green;
-}
-
-.tick{
-position:absolute;
-bottom:8px;
-right:10px;
-color:green;
-font-size:20px;
-}
+/* CARD */
 
 .card{
+
 position:relative;
-margin-bottom:10px;
-padding:10px;
+
+margin-bottom:12px;
+
+padding:15px;
+
+border-radius:12px;
+
+background:white;
+
+cursor:pointer;
+
 }
 
-/* HIDE SECTIONS */
+/* RED NEW */
+
+.new-list{
+
+border-left:6px solid red;
+
+}
+
+/* GREEN DONE */
+
+.completed-list{
+
+border-left:6px solid green;
+
+}
+
+/* GREEN TICK */
+
+.tick{
+
+position:absolute;
+
+bottom:8px;
+
+right:10px;
+
+font-size:18px;
+
+color:green;
+
+}
+
+/* DELETE BUTTON */
+
+.delete-btn{
+
+position:absolute;
+
+top:8px;
+
+right:10px;
+
+background:red;
+
+color:white;
+
+border:none;
+
+padding:5px 8px;
+
+border-radius:6px;
+
+cursor:pointer;
+
+}
+
+/* HIDDEN */
 
 .hidden{
+
 display:none;
+
 }
 
 </style>
@@ -108,6 +157,41 @@ onclick="goHome()">
 <br><br>
 
 <div id="listHistory"></div>
+
+<!-- ITEM VIEW -->
+
+<div id="itemView"
+class="hidden">
+
+<h3 id="listTime"></h3>
+
+<div id="items"></div>
+
+<br>
+
+<input
+type="text"
+id="shopName"
+placeholder="Shop Name">
+
+<br><br>
+
+<input
+type="number"
+id="amountPaid"
+placeholder="Total Amount">
+
+<br><br>
+
+<button
+class="submit-btn"
+onclick="finishList()">
+
+Finish Purchase
+
+</button>
+
+</div>
 
 </div>
 
@@ -193,13 +277,7 @@ loadItems();
 
 function goHome(){
 
-document.getElementById("mainMenu").style.display="block";
-
-document.getElementById("viewSection")
-.classList.add("hidden");
-
-document.getElementById("manageSection")
-.classList.add("hidden");
+location.reload();
 
 }
 
@@ -222,7 +300,10 @@ container.innerHTML="";
 history
 .slice()
 .reverse()
-.forEach(function(list){
+.forEach(function(list,index){
+
+let actualIndex=
+history.length-1-index;
 
 let card=
 document.createElement("div");
@@ -243,19 +324,52 @@ card.classList.add("completed-list");
 
 }
 
-/* CONTENT */
+/* CARD CONTENT */
 
 card.innerHTML=
 
 `
 <b>${list.time}</b>
+
 <br>
+
 Items: ${list.items.length}
+
 <br>
+
 Shop: ${list.shop || "-"}
+
 <br>
+
 Amount: ₹${list.amount || "-"}
 `;
+
+/* CLICK OPEN LIST */
+
+card.onclick=function(){
+
+openList(actualIndex);
+
+};
+
+/* DELETE BUTTON */
+
+let deleteBtn=
+document.createElement("button");
+
+deleteBtn.innerText="🗑";
+
+deleteBtn.className="delete-btn";
+
+deleteBtn.onclick=function(e){
+
+e.stopPropagation();
+
+deleteList(actualIndex);
+
+};
+
+card.appendChild(deleteBtn);
 
 /* GREEN TICK */
 
@@ -278,7 +392,118 @@ container.appendChild(card);
 
 }
 
-/* LOAD ITEMS WITH CATEGORY */
+/* OPEN LIST */
+
+function openList(index){
+
+let history=
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+let list=
+history[index];
+
+window.currentIndex=index;
+
+/* SHOW ITEM VIEW */
+
+document.getElementById("itemView")
+.classList.remove("hidden");
+
+document.getElementById("listTime")
+.innerText=list.time;
+
+/* LOAD SHOP */
+
+document.getElementById("shopName")
+.value=list.shop || "";
+
+document.getElementById("amountPaid")
+.value=list.amount || "";
+
+/* LOAD ITEMS */
+
+let itemsBox=
+document.getElementById("items");
+
+itemsBox.innerHTML="";
+
+list.items.forEach(item=>{
+
+let div=
+document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+
+`
+<input type="checkbox">
+
+${item}
+`;
+
+itemsBox.appendChild(div);
+
+});
+
+}
+
+/* FINISH PURCHASE */
+
+function finishList(){
+
+let history=
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+history[window.currentIndex]
+.status="completed";
+
+history[window.currentIndex]
+.shop=
+document.getElementById("shopName").value;
+
+history[window.currentIndex]
+.amount=
+document.getElementById("amountPaid").value;
+
+localStorage.setItem(
+"allLists",
+JSON.stringify(history)
+);
+
+alert("Purchase Completed!");
+
+location.reload();
+
+}
+
+/* DELETE LIST */
+
+function deleteList(index){
+
+if(!confirm("Delete this list?")) return;
+
+let history=
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+history.splice(index,1);
+
+localStorage.setItem(
+"allLists",
+JSON.stringify(history)
+);
+
+location.reload();
+
+}
+
+/* LOAD ITEMS */
 
 function loadItems(){
 
@@ -304,15 +529,12 @@ document.getElementById("itemsBox");
 
 box.innerHTML="";
 
-/* DISPLAY CATEGORY ITEMS */
-
 for(let category in items){
 
 let title=
 document.createElement("h4");
 
-title.innerText=
-category.toUpperCase();
+title.innerText=category.toUpperCase();
 
 box.appendChild(title);
 
@@ -326,46 +548,24 @@ div.className="card";
 div.innerHTML=
 
 `
-<input
-type="text"
-value="${name}">
+<input type="text" value="${name}">
 
 <select>
 
 <option value="liquid"
-${category==="liquid"?"selected":""}>
-
-Liquids
-
-</option>
+${category==="liquid"?"selected":""}>Liquids</option>
 
 <option value="bulk"
-${category==="bulk"?"selected":""}>
-
-Bulk
-
-</option>
+${category==="bulk"?"selected":""}>Bulk</option>
 
 <option value="small"
-${category==="small"?"selected":""}>
-
-Small
-
-</option>
+${category==="small"?"selected":""}>Small</option>
 
 <option value="packet"
-${category==="packet"?"selected":""}>
-
-Packet
-
-</option>
+${category==="packet"?"selected":""}>Packet</option>
 
 <option value="sachet"
-${category==="sachet"?"selected":""}>
-
-Sachet
-
-</option>
+${category==="sachet"?"selected":""}>Sachet</option>
 
 </select>
 
@@ -386,7 +586,7 @@ box.appendChild(div);
 
 }
 
-/* ADD NEW ITEM WITH CATEGORY */
+/* ADD ITEM */
 
 function addItem(){
 
@@ -401,9 +601,7 @@ div.className="card";
 div.innerHTML=
 
 `
-<input
-type="text"
-placeholder="New Item">
+<input type="text" placeholder="New Item">
 
 <select>
 
@@ -440,7 +638,7 @@ btn.parentElement.remove();
 
 }
 
-/* SAVE UPDATED ITEMS */
+/* SAVE ITEMS */
 
 function saveItems(){
 
