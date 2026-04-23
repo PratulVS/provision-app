@@ -11,8 +11,6 @@ href="style.css">
 
 <title>Pratul Dashboard</title>
 
-<!-- Firebase -->
-
 <script type="module">
 
 import { initializeApp }
@@ -25,7 +23,8 @@ getDocs,
 updateDoc,
 doc,
 deleteDoc,
-setDoc
+setDoc,
+getDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -50,69 +49,51 @@ window.updateDoc=updateDoc;
 window.doc=doc;
 window.deleteDoc=deleteDoc;
 window.setDoc=setDoc;
+window.getDoc=getDoc;
 
 </script>
 
 <style>
 
 .card{
-
 background:white;
 padding:15px;
 margin-bottom:10px;
 border-radius:12px;
-
 position:relative;
 cursor:pointer;
-
 }
 
 .new-list{
-
 border-left:6px solid red;
-
 }
 
 .completed-list{
-
 border-left:6px solid green;
-
 }
 
 .tick{
-
 position:absolute;
 bottom:8px;
 right:10px;
-
 color:green;
-
 font-size:18px;
-
 }
 
 .delete-btn{
-
 position:absolute;
 top:8px;
 right:10px;
-
 background:red;
 color:white;
-
 border:none;
-
 padding:5px 8px;
 border-radius:6px;
-
 cursor:pointer;
-
 }
 
 .hidden{
-
 display:none;
-
 }
 
 </style>
@@ -263,7 +244,6 @@ onclick="saveItems()">
 function showView(){
 
 document.getElementById("mainMenu").style.display="none";
-
 document.getElementById("viewSection")
 .classList.remove("hidden");
 
@@ -274,7 +254,6 @@ loadLists();
 function showManage(){
 
 document.getElementById("mainMenu").style.display="none";
-
 document.getElementById("manageSection")
 .classList.remove("hidden");
 
@@ -288,16 +267,16 @@ location.reload();
 
 }
 
-/* LOAD FIREBASE LISTS */
+/* LOAD LISTS */
 
 async function loadLists(){
 
-let container=
+let container =
 document.getElementById("listContainer");
 
 container.innerHTML="Loading...";
 
-let snapshot=
+let snapshot =
 await getDocs(
 collection(db,"provisionLists")
 );
@@ -341,7 +320,6 @@ let delBtn=
 document.createElement("button");
 
 delBtn.innerText="🗑";
-
 delBtn.className="delete-btn";
 
 delBtn.onclick=function(e){
@@ -360,7 +338,6 @@ let tick=
 document.createElement("div");
 
 tick.className="tick";
-
 tick.innerHTML="✔";
 
 card.appendChild(tick);
@@ -373,94 +350,25 @@ container.appendChild(card);
 
 }
 
-/* OPEN LIST */
+/* LOAD ITEMS FROM FIREBASE */
 
-function openList(id,data){
+async function loadItems(){
 
-window.currentDoc=id;
+let ref =
+doc(db,"categoryItems","main");
 
-document.getElementById("itemView")
-.classList.remove("hidden");
+let snap =
+await getDoc(ref);
 
-document.getElementById("listTime")
-.innerText=data.time;
+let items;
 
-let box=
-document.getElementById("items");
+if(snap.exists()){
 
-box.innerHTML="";
+items = snap.data();
 
-data.items.forEach(item=>{
+}else{
 
-let div=
-document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=
-
-`
-<input type="checkbox">
-${item}
-`;
-
-box.appendChild(div);
-
-});
-
-}
-
-/* FINISH */
-
-async function finishList(){
-
-let shop=
-document.getElementById("shopName").value;
-
-let amount=
-document.getElementById("amountPaid").value;
-
-await updateDoc(
-doc(db,"provisionLists",
-window.currentDoc),
-{
-
-status:"completed",
-shop:shop,
-amount:amount
-
-}
-
-);
-
-alert("Purchase Completed");
-
-location.reload();
-
-}
-
-/* DELETE */
-
-async function deleteList(id){
-
-if(!confirm("Delete list?")) return;
-
-await deleteDoc(
-doc(db,"provisionLists",id)
-);
-
-location.reload();
-
-}
-
-/* MANAGE ITEMS */
-
-function loadItems(){
-
-let items=
-JSON.parse(
-localStorage.getItem("categoryItems")
-)||{
+items = {
 
 liquid:["Oil","Milk"],
 bulk:["Rice","Wheat Flour"],
@@ -469,6 +377,10 @@ packet:["Chips","Masala"],
 sachet:["Shampoo"]
 
 };
+
+}
+
+/* DISPLAY */
 
 let box=
 document.getElementById("itemsBox");
@@ -533,54 +445,6 @@ box.appendChild(div);
 
 }
 
-/* ADD ITEM */
-
-function addItem(){
-
-let box=
-document.getElementById("itemsBox");
-
-let div=
-document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=
-
-`
-<input type="text" placeholder="New Item">
-
-<select>
-
-<option value="liquid">Liquid</option>
-<option value="bulk">Bulk</option>
-<option value="small">Small</option>
-<option value="packet">Packet</option>
-<option value="sachet">Sachet</option>
-
-</select>
-
-<button
-onclick="removeItem(this)"
-style="background:red;color:white">
-
-❌
-
-</button>
-`;
-
-box.appendChild(div);
-
-}
-
-/* REMOVE */
-
-function removeItem(btn){
-
-btn.parentElement.remove();
-
-}
-
 /* SAVE ITEMS */
 
 async function saveItems(){
@@ -621,9 +485,24 @@ doc(db,"categoryItems","main"),
 newItems
 );
 
-alert("Items Saved Successfully!");
+alert("Items Updated Successfully!");
 
 }
+
+/* DELETE LIST */
+
+async function deleteList(id){
+
+if(!confirm("Delete list?")) return;
+
+await deleteDoc(
+doc(db,"provisionLists",id)
+);
+
+location.reload();
+
+}
+
 /* LOGOUT */
 
 function logout(){
