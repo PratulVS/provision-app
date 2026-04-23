@@ -133,7 +133,7 @@ Submit List
 
 <script>
 
-/* DEFAULT FALLBACK ITEMS */
+/* DEFAULT ITEMS */
 
 let defaultItems = {
 
@@ -151,7 +151,7 @@ sachet:["Shampoo"]
 
 let itemsData = defaultItems;
 
-/* LOAD ITEMS FROM FIREBASE */
+/* LOAD FROM FIREBASE */
 
 window.onload = async function(){
 
@@ -179,10 +179,8 @@ itemsData = snap.data();
 
 else{
 
-/* Create default if missing */
-
 await setDoc(
-doc(db,"categoryItems","main"),
+ref,
 defaultItems
 );
 
@@ -206,7 +204,7 @@ displayAll();
 
 }
 
-/* DISPLAY ALL CATEGORIES */
+/* DISPLAY ALL */
 
 function displayAll(){
 
@@ -240,7 +238,7 @@ section.innerHTML += createItemRow(item,key);
 
 }
 
-/* CREATE ITEM */
+/* CREATE ROW */
 
 function createItemRow(item,category){
 
@@ -350,7 +348,7 @@ ${qtyOptions}
 async function addCustomItem(){
 
 let name =
-document.getElementById("customItem").value;
+document.getElementById("customItem").value.trim();
 
 let qty =
 document.getElementById("customQty").value;
@@ -362,7 +360,6 @@ if(name==="") return;
 let category="small";
 
 if(qty.includes("L") || qty.includes("ml"))
-
 category="liquid";
 
 if(qty.includes("kg") || qty.includes("g")){
@@ -370,23 +367,50 @@ if(qty.includes("kg") || qty.includes("g")){
 let num=parseInt(qty);
 
 if(num>=250)
-
 category="bulk";
 
 }
 
-/* ADD ITEM */
+/* LOAD LATEST DATA */
 
-itemsData[category].push(name);
+let ref =
+doc(db,"categoryItems","main");
 
-/* SAVE TO FIREBASE */
+let snap =
+await getDoc(ref);
+
+let currentData;
+
+if(snap.exists()){
+
+currentData = snap.data();
+
+}else{
+
+currentData = defaultItems;
+
+}
+
+/* ADD ITEM SAFELY */
+
+if(!currentData[category].includes(name)){
+
+currentData[category].push(name);
+
+}
+
+/* SAVE */
 
 await setDoc(
-doc(db,"categoryItems","main"),
-itemsData
+ref,
+currentData
 );
 
+itemsData=currentData;
+
 displayAll();
+
+/* CLEAR */
 
 document.getElementById("customItem").value="";
 document.getElementById("customQty").value="";
@@ -446,8 +470,6 @@ return;
 
 }
 
-/* SAVE LIST */
-
 await addDoc(
 collection(db,"provisionLists"),
 {
@@ -459,7 +481,6 @@ items:list,
 status:"pending",
 
 shop:"",
-
 amount:""
 
 }
