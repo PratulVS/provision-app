@@ -13,26 +13,22 @@ href="style.css">
 
 <style>
 
-/* CARD POSITION FIX */
+/* CARD POSITION */
 
 .card{
 position:relative;
 }
 
-/* RED NEW LIST */
+/* RED NEW */
 
 .new-list{
-
 border-left:6px solid red;
-
 }
 
 /* GREEN COMPLETED */
 
 .completed-list{
-
 border-left:6px solid green;
-
 }
 
 /* DELETE BUTTON */
@@ -74,6 +70,15 @@ font-weight:bold;
 
 }
 
+/* EDIT FIELD */
+
+.editItem{
+
+width:75%;
+padding:6px;
+
+}
+
 </style>
 
 </head>
@@ -109,6 +114,14 @@ style="display:none">
 
 <div id="items"></div>
 
+<button
+class="add-btn"
+onclick="addNewItem()">
+
+➕ Add Item
+
+</button>
+
 <input
 type="text"
 id="shopName"
@@ -118,6 +131,14 @@ placeholder="Shop Name">
 type="number"
 id="amountPaid"
 placeholder="Total Amount">
+
+<button
+class="submit-btn"
+onclick="updateList()">
+
+Update List
+
+</button>
 
 <button
 class="submit-btn"
@@ -144,7 +165,7 @@ window.location.href="index.html";
 
 }
 
-/* LOAD LIST HISTORY */
+/* LOAD HISTORY */
 
 function loadHistory(){
 
@@ -175,23 +196,17 @@ document.createElement("div");
 
 card.className="card";
 
-/* RED FOR NEW */
+/* STATUS COLORS */
 
 if(list.status==="pending"){
 
-card.classList.add(
-"new-list"
-);
+card.classList.add("new-list");
 
 }
 
-/* GREEN FOR COMPLETED */
-
 if(list.status==="completed"){
 
-card.classList.add(
-"completed-list"
-);
+card.classList.add("completed-list");
 
 }
 
@@ -269,6 +284,8 @@ localStorage.getItem("allLists")
 let list =
 history[index];
 
+window.currentEditIndex=index;
+
 document.getElementById(
 "listHistory"
 ).style.display="none";
@@ -281,14 +298,20 @@ document.getElementById(
 "listTime"
 ).innerText=list.time;
 
-let itemsBox =
 document.getElementById(
-"items"
-);
+"shopName"
+).value=list.shop || "";
+
+document.getElementById(
+"amountPaid"
+).value=list.amount || "";
+
+let itemsBox =
+document.getElementById("items");
 
 itemsBox.innerHTML="";
 
-/* DISPLAY ITEMS */
+/* LOAD ITEMS */
 
 list.items.forEach(item=>{
 
@@ -300,8 +323,18 @@ div.className="card";
 div.innerHTML=
 
 `
-<input type="checkbox">
-${item}
+<input
+type="text"
+value="${item}"
+class="editItem">
+
+<button
+onclick="removeItem(this)"
+style="background:red;color:white">
+
+❌
+
+</button>
 `;
 
 itemsBox.appendChild(div);
@@ -310,42 +343,138 @@ itemsBox.appendChild(div);
 
 }
 
-/* FINISH LIST */
+/* ADD ITEM */
 
-function finishList(){
+function addNewItem(){
 
-let shop =
-document.getElementById(
-"shopName"
-).value;
+let itemsBox =
+document.getElementById("items");
 
-let amount =
-document.getElementById(
-"amountPaid"
-).value;
+let div =
+document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+
+`
+<input
+type="text"
+placeholder="New Item"
+class="editItem">
+
+<button
+onclick="removeItem(this)"
+style="background:red;color:white">
+
+❌
+
+</button>
+`;
+
+itemsBox.appendChild(div);
+
+}
+
+/* REMOVE ITEM */
+
+function removeItem(btn){
+
+btn.parentElement.remove();
+
+}
+
+/* UPDATE LIST */
+
+function updateList(){
 
 let history =
 JSON.parse(
 localStorage.getItem("allLists")
 );
 
-/* FIND LAST PENDING */
+let inputs =
+document.querySelectorAll(
+".editItem"
+);
 
-for(let i=history.length-1;i>=0;i--){
+let updatedItems=[];
 
-if(history[i].status==="pending"){
+inputs.forEach(input=>{
 
-history[i].status="completed";
+if(input.value.trim()!==""){
 
-history[i].shop=shop;
-
-history[i].amount=amount;
-
-break;
+updatedItems.push(
+input.value.trim()
+);
 
 }
 
+});
+
+/* UPDATE ITEMS */
+
+history[
+window.currentEditIndex
+].items = updatedItems;
+
+/* UPDATE SHOP */
+
+history[
+window.currentEditIndex
+].shop =
+document.getElementById(
+"shopName"
+).value;
+
+/* UPDATE AMOUNT */
+
+history[
+window.currentEditIndex
+].amount =
+document.getElementById(
+"amountPaid"
+).value;
+
+/* SAVE */
+
+localStorage.setItem(
+"allLists",
+JSON.stringify(history)
+);
+
+alert("List Updated!");
+
+location.reload();
+
 }
+
+/* FINISH LIST */
+
+function finishList(){
+
+let history =
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+history[
+window.currentEditIndex
+].status="completed";
+
+history[
+window.currentEditIndex
+].shop =
+document.getElementById(
+"shopName"
+).value;
+
+history[
+window.currentEditIndex
+].amount =
+document.getElementById(
+"amountPaid"
+).value;
 
 localStorage.setItem(
 "allLists",
@@ -358,7 +487,7 @@ location.reload();
 
 }
 
-/* DELETE LIST */
+/* DELETE */
 
 function deleteList(index){
 
@@ -394,7 +523,7 @@ window.location.href="index.html";
 
 }
 
-/* INITIAL LOAD */
+/* LOAD */
 
 window.onload=loadHistory;
 
