@@ -2,17 +2,9 @@
 <html>
 
 <head>
-<title>Pratul Dashboard</title>
+<title>Family Provision Login</title>
 
 <style>
-
-/* RESET */
-
-* {
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
 
 /* BODY */
 
@@ -27,188 +19,42 @@ background: linear-gradient(
 #dcfce7
 );
 
-padding:15px;
+height:100vh;
 
-min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 
 }
 
-/* CONTAINER */
+/* MAIN BOX */
 
 .container {
 
-max-width:500px;
-margin:auto;
-
-}
-
-/* HEADER */
-
-.header {
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-margin-bottom:15px;
-
-}
-
-/* LOGOUT */
-
-.logout-btn {
-
-background:#6b7280;
-color:white;
-
-border:none;
-
-padding:8px 14px;
-
-border-radius:8px;
-
-cursor:pointer;
-
-}
-
-/* LIST CARD */
-
-.list-card {
-
 background:white;
 
-padding:15px;
+padding:30px;
 
-border-radius:12px;
+border-radius:15px;
 
-margin-bottom:10px;
+width:320px;
 
 box-shadow:
-0 4px 10px rgba(0,0,0,0.08);
+0 4px 15px rgba(0,0,0,0.1);
 
-cursor:pointer;
-
-position:relative;
+text-align:center;
 
 }
 
-/* RED NEW */
+/* BUTTONS */
 
-.new-list {
-
-border-left:6px solid red;
-
-}
-
-/* GREEN COMPLETE */
-
-.completed {
-
-border-left:6px solid green;
-
-}
-
-/* GREEN TICK */
-
-.tick {
-
-position:absolute;
-
-bottom:8px;
-
-right:10px;
-
-font-size:20px;
-
-color:green;
-
-}
-
-/* DELETE BUTTON */
-
-.delete-btn {
-
-position:absolute;
-
-top:8px;
-
-right:8px;
-
-border:none;
-
-background:red;
-
-color:white;
-
-padding:4px 8px;
-
-border-radius:6px;
-
-cursor:pointer;
-
-}
-
-/* ITEM VIEW */
-
-.item-box {
-
-background:white;
-
-padding:12px;
-
-border-radius:10px;
-
-margin-bottom:8px;
-
-display:flex;
-
-align-items:center;
-
-gap:10px;
-
-}
-
-/* INPUT BOX */
-
-.input-box {
-
-margin-top:10px;
-
-display:flex;
-
-gap:8px;
-
-}
-
-.input-box input {
-
-flex:1;
-
-padding:8px;
-
-border-radius:6px;
-
-border:1px solid #ccc;
-
-}
-
-/* FINISH BUTTON */
-
-.finish-btn {
+.main-btn {
 
 width:100%;
 
 padding:14px;
 
-margin-top:10px;
-
-background:linear-gradient(
-135deg,
-#22c55e,
-#16a34a
-);
-
-color:white;
+margin:10px 0;
 
 border:none;
 
@@ -217,6 +63,73 @@ border-radius:10px;
 font-weight:bold;
 
 cursor:pointer;
+
+font-size:16px;
+
+}
+
+/* SHoba Button */
+
+.shoba-btn {
+
+background:#22c55e;
+color:white;
+
+}
+
+/* Pratul Button */
+
+.pratul-btn {
+
+background:#3b82f6;
+color:white;
+
+}
+
+/* LOGIN FORM */
+
+.login-form {
+
+margin-top:15px;
+
+display:none;
+
+}
+
+/* INPUT */
+
+input {
+
+width:100%;
+
+padding:10px;
+
+margin:6px 0;
+
+border-radius:8px;
+
+border:1px solid #ccc;
+
+}
+
+/* LOGIN BUTTON */
+
+.login-btn {
+
+background:#2563eb;
+color:white;
+
+}
+
+/* ERROR */
+
+.error {
+
+color:red;
+
+font-size:14px;
+
+margin-top:5px;
 
 }
 
@@ -228,63 +141,55 @@ cursor:pointer;
 
 <div class="container">
 
-<!-- HEADER -->
+<h2>Family Provisions</h2>
 
-<div class="header">
-
-<h2>Pratul Dashboard</h2>
+<!-- SHOBA BUTTON -->
 
 <button
-class="logout-btn"
-onclick="logout()">
+class="main-btn shoba-btn"
+onclick="goShoba()">
 
-Logout
+👩 Shoba Dashboard
 
 </button>
 
-</div>
+<!-- PRATUL BUTTON -->
 
-<!-- LIST HISTORY -->
+<button
+class="main-btn pratul-btn"
+onclick="showLogin()">
 
-<div id="listHistory"></div>
+👨 Pratul Dashboard
 
-<!-- ITEM VIEW -->
+</button>
 
-<div id="itemView" style="display:none">
+<!-- LOGIN FORM -->
 
-<h3 id="listTime"></h3>
-
-<div id="items"></div>
-
-<!-- SHOP NAME -->
-
-<div class="input-box">
+<div
+class="login-form"
+id="loginForm">
 
 <input
 type="text"
-id="shopName"
-placeholder="Enter shop name">
-
-</div>
-
-<!-- AMOUNT -->
-
-<div class="input-box">
+id="username"
+placeholder="Username">
 
 <input
-type="number"
-id="amountPaid"
-placeholder="Enter total amount">
-
-</div>
+type="password"
+id="password"
+placeholder="Password">
 
 <button
-class="finish-btn"
-onclick="finishList()">
+class="main-btn login-btn"
+onclick="login()">
 
-Finish
+Login as Pratul
 
 </button>
+
+<p
+id="errorMsg"
+class="error"></p>
 
 </div>
 
@@ -292,266 +197,74 @@ Finish
 
 <script>
 
+/* GO SHOBA */
+
+function goShoba(){
+
+window.location.href="shoba.html";
+
+}
+
+/* SHOW LOGIN */
+
+function showLogin(){
+
+document.getElementById(
+"loginForm"
+).style.display="block";
+
+}
+
+/* LOGIN FUNCTION */
+
+function login(){
+
+let user =
+document.getElementById("username").value;
+
+let pass =
+document.getElementById("password").value;
+
+/* USERNAME */
+
+let validUser =
+"vspratul2004@gmail.com";
+
+/* PASSWORDS */
+
+let password1 =
+"Pratul123!!!";
+
+let password2 =
+"9944352375";
+
 /* LOGIN CHECK */
 
 if(
-localStorage.getItem("isLoggedIn")
-!=="true"
+user===validUser &&
+(pass===password1 || pass===password2)
 ){
 
-window.location.href="index.html";
-
-}
-
-/* LOAD HISTORY */
-
-function loadHistory(){
-
-let history =
-JSON.parse(
-localStorage.getItem("allLists")
-) || [];
-
-let container =
-document.getElementById(
-"listHistory"
-);
-
-container.innerHTML="";
-
-/* NEWEST ON TOP */
-
-history.slice().reverse().forEach(
-function(list,index){
-
-let card =
-document.createElement("div");
-
-card.className="list-card";
-
-/* RED NEW */
-
-if(list.status==="pending"){
-
-card.classList.add("new-list");
-
-}
-
-/* GREEN COMPLETE */
-
-if(list.status==="completed"){
-
-card.classList.add("completed");
-
-}
-
-/* CARD CONTENT */
-
-card.innerHTML=
-
-`
-<b>${list.time}</b>
-<br>
-Items: ${list.items.length}
-<br>
-Shop: ${list.shop || "-"}
-<br>
-Amount: ₹${list.amount || "-"}
-`;
-
-/* GREEN TICK */
-
-if(list.status==="completed"){
-
-let tick =
-document.createElement("div");
-
-tick.className="tick";
-
-tick.innerHTML="✔";
-
-card.appendChild(tick);
-
-}
-
-/* DELETE BUTTON */
-
-let deleteBtn =
-document.createElement("button");
-
-deleteBtn.innerText="🗑";
-
-deleteBtn.className="delete-btn";
-
-deleteBtn.onclick=function(e){
-
-e.stopPropagation();
-
-deleteList(
-history.length-1-index
-);
-
-};
-
-card.appendChild(deleteBtn);
-
-/* CLICK OPEN */
-
-card.onclick=function(){
-
-openList(
-history.length-1-index
-);
-
-};
-
-container.appendChild(card);
-
-});
-
-}
-
-/* OPEN LIST */
-
-function openList(index){
-
-let history =
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-let list =
-history[index];
-
-document.getElementById(
-"listHistory"
-).style.display="none";
-
-document.getElementById(
-"itemView"
-).style.display="block";
-
-document.getElementById(
-"listTime"
-).innerText=list.time;
-
-let itemsBox =
-document.getElementById(
-"items"
-);
-
-itemsBox.innerHTML="";
-
-/* ITEMS */
-
-list.items.forEach(function(item){
-
-let div =
-document.createElement("div");
-
-div.className="item-box";
-
-div.innerHTML=
-
-`
-<input type="checkbox">
-${item}
-`;
-
-itemsBox.appendChild(div);
-
-});
-
-}
-
-/* FINISH LIST */
-
-function finishList(){
-
-let shop =
-document.getElementById(
-"shopName"
-).value;
-
-let amount =
-document.getElementById(
-"amountPaid"
-).value;
-
-let history =
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-/* LAST OPENED LIST */
-
-for(let i=history.length-1;i>=0;i--){
-
-if(history[i].status==="pending"){
-
-history[i].status="completed";
-
-history[i].shop=shop;
-
-history[i].amount=amount;
-
-break;
-
-}
-
-}
-
 localStorage.setItem(
-"allLists",
-JSON.stringify(history)
-);
-
-alert("List Completed!");
-
-location.reload();
-
-}
-
-/* DELETE */
-
-function deleteList(index){
-
-if(!confirm(
-"Delete this list?"
-)) return;
-
-let history =
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-history.splice(index,1);
-
-localStorage.setItem(
-"allLists",
-JSON.stringify(history)
-);
-
-location.reload();
-
-}
-
-/* LOGOUT */
-
-function logout(){
-
-localStorage.removeItem(
-"isLoggedIn"
+"isLoggedIn",
+"true"
 );
 
 window.location.href=
-"index.html";
+"pratul.html";
 
 }
 
-/* LOAD */
+else{
 
-window.onload=loadHistory;
+document.getElementById(
+"errorMsg"
+).innerText=
+"Invalid Username or Password";
+
+}
+
+}
 
 </script>
 
