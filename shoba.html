@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <title>Shoba Provision List</title>
 
 <style>
 
-body {
-font-family: Arial, sans-serif;
+/* RESET */
+* {
 margin: 0;
-padding: 20px;
+padding: 0;
+box-sizing: border-box;
+}
 
-/* Attractive gradient background */
+/* BODY */
+body {
+
+font-family: 'Segoe UI', sans-serif;
+
 background: linear-gradient(
 135deg,
 #dbeafe,
@@ -19,29 +26,130 @@ background: linear-gradient(
 );
 
 min-height: 100vh;
-}
 
-h2 {
-text-align: center;
-color: #333;
-margin-bottom: 20px;
-}
-
-/* Card styling */
-.card {
-background: white;
 padding: 15px;
-margin-bottom: 12px;
+}
+
+/* MAIN CONTAINER */
+.container {
+
+max-width: 500px;
+
+margin: auto;
+
+}
+
+/* HEADER */
+.header {
+
+text-align: center;
+
+margin-bottom: 15px;
+
+}
+
+.header h2 {
+
+color: #333;
+
+margin-bottom: 5px;
+
+}
+
+.header p {
+
+color: #555;
+
+font-size: 14px;
+
+}
+
+/* SEARCH BAR */
+.search-box {
+
+width: 100%;
+
+padding: 12px;
+
+border-radius: 10px;
+
+border: 1px solid #ccc;
+
+font-size: 16px;
+
+margin-bottom: 15px;
+
+background: white;
+
+}
+
+/* CATEGORY TITLE */
+.category {
+
+font-weight: bold;
+
+margin: 15px 0 8px;
+
+color: #333;
+
+}
+
+/* ITEM CARD */
+.card {
+
+background: white;
+
+padding: 14px;
+
+margin-bottom: 10px;
+
 border-radius: 12px;
 
 box-shadow:
-0 4px 10px rgba(0,0,0,0.1);
+0 4px 10px rgba(0,0,0,0.08);
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
 }
 
-/* Button styling */
-button {
-padding: 14px;
+/* LEFT SIDE */
+.item-left {
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
 font-size: 16px;
+
+}
+
+/* DROPDOWN */
+select {
+
+padding: 6px;
+
+border-radius: 6px;
+
+border: 1px solid #ccc;
+
+}
+
+/* BUTTON */
+.submit-btn {
+
+width: 100%;
+
+padding: 14px;
+
+font-size: 16px;
+
+margin-top: 10px;
 
 background: linear-gradient(
 135deg,
@@ -50,87 +158,215 @@ background: linear-gradient(
 );
 
 color: white;
+
 border: none;
+
 border-radius: 10px;
-width: 100%;
 
 font-weight: bold;
+
+cursor: pointer;
+
 }
 
-/* Dropdown */
-select {
-margin-left: 10px;
-padding: 6px;
-border-radius: 6px;
-border: 1px solid #ccc;
-}
+.submit-btn:hover {
 
-/* Checkbox spacing */
-input[type="checkbox"] {
-margin-right: 8px;
+opacity: 0.9;
+
 }
 
 </style>
+
 </head>
 
 <body>
 
+<div class="container">
+
+<!-- HEADER -->
+
+<div class="header">
+
 <h2>Shoba - Provision List</h2>
 
-<div class="card">
-<input type="checkbox" value="Rice"> Rice
+<p>Select household items</p>
+
+</div>
+
+<!-- SEARCH -->
+
+<input
+type="text"
+id="searchInput"
+class="search-box"
+placeholder="🔍 Search items (Rice, Oil...)"
+onkeyup="searchItems()"
+>
+
+<!-- CATEGORY 1 -->
+
+<div class="category">
+Grains & Essentials
+</div>
+
+<div class="card item">
+
+<div class="item-left">
+
+<input type="checkbox" value="Rice">
+
+<span>Rice</span>
+
+</div>
 
 <select id="Rice">
+
 <option>250 g</option>
 <option>500 g</option>
 <option>1 kg</option>
 <option>2 kg</option>
-<option>5 kg</option>
+
 </select>
+
 </div>
 
-<div class="card">
-<input type="checkbox" value="Oil"> Oil
+<div class="card item">
 
-<select id="Oil">
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
-<option>2 L</option>
-<option>5 L</option>
-</select>
+<div class="item-left">
+
+<input type="checkbox" value="Wheat Flour">
+
+<span>Wheat Flour</span>
+
 </div>
 
-<div class="card">
-<input type="checkbox" value="Sugar"> Sugar
+<select id="Wheat Flour">
+
+<option>500 g</option>
+<option>1 kg</option>
+<option>2 kg</option>
+
+</select>
+
+</div>
+
+<div class="card item">
+
+<div class="item-left">
+
+<input type="checkbox" value="Sugar">
+
+<span>Sugar</span>
+
+</div>
 
 <select id="Sugar">
+
 <option>250 g</option>
 <option>500 g</option>
 <option>1 kg</option>
-<option>2 kg</option>
-<option>5 kg</option>
+
 </select>
+
 </div>
 
-<div class="card">
-<input type="checkbox" value="Milk"> Milk
+<!-- CATEGORY 2 -->
 
-<select id="Milk">
+<div class="category">
+Liquids
+</div>
+
+<div class="card item">
+
+<div class="item-left">
+
+<input type="checkbox" value="Oil">
+
+<span>Oil</span>
+
+</div>
+
+<select id="Oil">
+
 <option>250 ml</option>
 <option>500 ml</option>
 <option>1 L</option>
 <option>2 L</option>
+
 </select>
+
 </div>
 
-<br>
+<div class="card item">
 
-<button onclick="submitList()">
+<div class="item-left">
+
+<input type="checkbox" value="Milk">
+
+<span>Milk</span>
+
+</div>
+
+<select id="Milk">
+
+<option>250 ml</option>
+<option>500 ml</option>
+<option>1 L</option>
+
+</select>
+
+</div>
+
+<!-- SUBMIT -->
+
+<button
+class="submit-btn"
+onclick="submitList()"
+>
+
 Submit List
+
 </button>
 
+</div>
+
 <script>
+
+/* SEARCH FUNCTION */
+
+function searchItems() {
+
+let input =
+document.getElementById("searchInput");
+
+let filter =
+input.value.toLowerCase();
+
+let items =
+document.getElementsByClassName("item");
+
+for (let i = 0; i < items.length; i++) {
+
+let text =
+items[i].innerText.toLowerCase();
+
+if (text.includes(filter)) {
+
+items[i].style.display = "";
+
+}
+
+else {
+
+items[i].style.display = "none";
+
+}
+
+}
+
+}
+
+/* SUBMIT FUNCTION */
 
 function submitList(){
 
@@ -164,5 +400,5 @@ alert("List Submitted Successfully!");
 </script>
 
 </body>
-</html>
 
+</html>
