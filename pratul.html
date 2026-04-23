@@ -61,7 +61,6 @@ padding:15px;
 margin-bottom:10px;
 border-radius:12px;
 position:relative;
-cursor:pointer;
 }
 
 .new-list{
@@ -158,39 +157,6 @@ onclick="goHome()">
 <br><br>
 
 <div id="listContainer"></div>
-
-<div id="itemView"
-class="hidden">
-
-<h3 id="listTime"></h3>
-
-<div id="items"></div>
-
-<br>
-
-<input
-type="text"
-id="shopName"
-placeholder="Shop Name">
-
-<br><br>
-
-<input
-type="number"
-id="amountPaid"
-placeholder="Total Amount">
-
-<br><br>
-
-<button
-class="submit-btn"
-onclick="finishList()">
-
-Finish Purchase
-
-</button>
-
-</div>
 
 </div>
 
@@ -292,57 +258,13 @@ document.createElement("div");
 
 card.className="card";
 
-if(data.status==="pending")
-card.classList.add("new-list");
-
-if(data.status==="completed")
-card.classList.add("completed-list");
-
 card.innerHTML=
 
 `
 <b>${data.time}</b>
 <br>
 Items: ${data.items.length}
-<br>
-Shop: ${data.shop || "-"}
-<br>
-Amount: ₹${data.amount || "-"}
 `;
-
-card.onclick=function(){
-
-openList(docSnap.id,data);
-
-};
-
-let delBtn=
-document.createElement("button");
-
-delBtn.innerText="🗑";
-delBtn.className="delete-btn";
-
-delBtn.onclick=function(e){
-
-e.stopPropagation();
-
-deleteList(docSnap.id);
-
-};
-
-card.appendChild(delBtn);
-
-if(data.status==="completed"){
-
-let tick=
-document.createElement("div");
-
-tick.className="tick";
-tick.innerHTML="✔";
-
-card.appendChild(tick);
-
-}
 
 container.appendChild(card);
 
@@ -399,6 +321,21 @@ box.appendChild(title);
 
 items[category].forEach(name=>{
 
+createRow(name,category);
+
+});
+
+}
+
+}
+
+/* CREATE ROW */
+
+function createRow(name,category){
+
+let box=
+document.getElementById("itemsBox");
+
 let div=
 document.createElement("div");
 
@@ -439,9 +376,21 @@ style="background:red;color:white">
 
 box.appendChild(div);
 
-});
+}
+
+/* ADD ITEM */
+
+function addItem(){
+
+createRow("","small");
 
 }
+
+/* REMOVE ITEM */
+
+function removeItem(btn){
+
+btn.parentElement.remove();
 
 }
 
@@ -486,20 +435,6 @@ newItems
 );
 
 alert("Items Updated Successfully!");
-
-}
-
-/* DELETE LIST */
-
-async function deleteList(id){
-
-if(!confirm("Delete list?")) return;
-
-await deleteDoc(
-doc(db,"provisionLists",id)
-);
-
-location.reload();
 
 }
 
