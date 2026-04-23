@@ -7,6 +7,7 @@
 <style>
 
 /* RESET */
+
 * {
 margin:0;
 padding:0;
@@ -91,7 +92,7 @@ position:relative;
 
 }
 
-/* NEW LIST HIGHLIGHT */
+/* RED NEW */
 
 .new-list {
 
@@ -99,7 +100,7 @@ border-left:6px solid red;
 
 }
 
-/* COMPLETED */
+/* GREEN COMPLETE */
 
 .completed {
 
@@ -123,7 +124,31 @@ color:green;
 
 }
 
-/* ITEMS PAGE */
+/* DELETE BUTTON */
+
+.delete-btn {
+
+position:absolute;
+
+top:8px;
+
+right:8px;
+
+border:none;
+
+background:red;
+
+color:white;
+
+padding:4px 8px;
+
+border-radius:6px;
+
+cursor:pointer;
+
+}
+
+/* ITEM VIEW */
 
 .item-box {
 
@@ -143,7 +168,31 @@ gap:10px;
 
 }
 
-/* BUTTON */
+/* INPUT BOX */
+
+.input-box {
+
+margin-top:10px;
+
+display:flex;
+
+gap:8px;
+
+}
+
+.input-box input {
+
+flex:1;
+
+padding:8px;
+
+border-radius:6px;
+
+border:1px solid #ccc;
+
+}
+
+/* FINISH BUTTON */
 
 .finish-btn {
 
@@ -167,29 +216,7 @@ border-radius:10px;
 
 font-weight:bold;
 
-}
-
-/* AMOUNT BOX */
-
-.amount-box {
-
-margin-top:10px;
-
-display:flex;
-
-gap:10px;
-
-}
-
-.amount-box input {
-
-flex:1;
-
-padding:8px;
-
-border-radius:6px;
-
-border:1px solid #ccc;
+cursor:pointer;
 
 }
 
@@ -229,9 +256,20 @@ Logout
 
 <div id="items"></div>
 
+<!-- SHOP NAME -->
+
+<div class="input-box">
+
+<input
+type="text"
+id="shopName"
+placeholder="Enter shop name">
+
+</div>
+
 <!-- AMOUNT -->
 
-<div class="amount-box">
+<div class="input-box">
 
 <input
 type="number"
@@ -254,7 +292,18 @@ Finish
 
 <script>
 
-/* LOAD LIST HISTORY */
+/* LOGIN CHECK */
+
+if(
+localStorage.getItem("isLoggedIn")
+!=="true"
+){
+
+window.location.href="index.html";
+
+}
+
+/* LOAD HISTORY */
 
 function loadHistory(){
 
@@ -270,9 +319,9 @@ document.getElementById(
 
 container.innerHTML="";
 
-/* Latest on Top */
+/* NEWEST ON TOP */
 
-history.reverse().forEach(
+history.slice().reverse().forEach(
 function(list,index){
 
 let card =
@@ -280,7 +329,7 @@ document.createElement("div");
 
 card.className="list-card";
 
-/* Highlight new */
+/* RED NEW */
 
 if(list.status==="pending"){
 
@@ -288,13 +337,15 @@ card.classList.add("new-list");
 
 }
 
+/* GREEN COMPLETE */
+
 if(list.status==="completed"){
 
 card.classList.add("completed");
 
 }
 
-/* Date */
+/* CARD CONTENT */
 
 card.innerHTML=
 
@@ -302,7 +353,13 @@ card.innerHTML=
 <b>${list.time}</b>
 <br>
 Items: ${list.items.length}
+<br>
+Shop: ${list.shop || "-"}
+<br>
+Amount: ₹${list.amount || "-"}
 `;
+
+/* GREEN TICK */
 
 if(list.status==="completed"){
 
@@ -317,11 +374,34 @@ card.appendChild(tick);
 
 }
 
-/* Click open */
+/* DELETE BUTTON */
+
+let deleteBtn =
+document.createElement("button");
+
+deleteBtn.innerText="🗑";
+
+deleteBtn.className="delete-btn";
+
+deleteBtn.onclick=function(e){
+
+e.stopPropagation();
+
+deleteList(
+history.length-1-index
+);
+
+};
+
+card.appendChild(deleteBtn);
+
+/* CLICK OPEN */
 
 card.onclick=function(){
 
-openList(index);
+openList(
+history.length-1-index
+);
 
 };
 
@@ -341,7 +421,7 @@ localStorage.getItem("allLists")
 );
 
 let list =
-history.reverse()[index];
+history[index];
 
 document.getElementById(
 "listHistory"
@@ -361,6 +441,8 @@ document.getElementById(
 );
 
 itemsBox.innerHTML="";
+
+/* ITEMS */
 
 list.items.forEach(function(item){
 
@@ -386,6 +468,11 @@ itemsBox.appendChild(div);
 
 function finishList(){
 
+let shop =
+document.getElementById(
+"shopName"
+).value;
+
 let amount =
 document.getElementById(
 "amountPaid"
@@ -396,11 +483,23 @@ JSON.parse(
 localStorage.getItem("allLists")
 );
 
-history[history.length-1]
-.status="completed";
+/* LAST OPENED LIST */
 
-history[history.length-1]
-.amount=amount;
+for(let i=history.length-1;i>=0;i--){
+
+if(history[i].status==="pending"){
+
+history[i].status="completed";
+
+history[i].shop=shop;
+
+history[i].amount=amount;
+
+break;
+
+}
+
+}
 
 localStorage.setItem(
 "allLists",
@@ -413,16 +512,44 @@ location.reload();
 
 }
 
+/* DELETE */
+
+function deleteList(index){
+
+if(!confirm(
+"Delete this list?"
+)) return;
+
+let history =
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+history.splice(index,1);
+
+localStorage.setItem(
+"allLists",
+JSON.stringify(history)
+);
+
+location.reload();
+
+}
+
 /* LOGOUT */
 
 function logout(){
+
+localStorage.removeItem(
+"isLoggedIn"
+);
 
 window.location.href=
 "index.html";
 
 }
 
-/* INITIAL LOAD */
+/* LOAD */
 
 window.onload=loadHistory;
 
