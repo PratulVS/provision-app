@@ -7,7 +7,7 @@
 <style>
 
 /* RESET */
-* {
+*{
 margin:0;
 padding:0;
 box-sizing:border-box;
@@ -15,11 +15,11 @@ box-sizing:border-box;
 
 /* BODY */
 
-body {
+body{
 
 font-family:'Segoe UI',sans-serif;
 
-background: linear-gradient(
+background:linear-gradient(
 135deg,
 #dbeafe,
 #fef9c3,
@@ -28,34 +28,29 @@ background: linear-gradient(
 
 padding:15px;
 
-min-height:100vh;
-
 }
 
 /* CONTAINER */
 
-.container {
-
+.container{
 max-width:500px;
 margin:auto;
-
 }
 
 /* HEADER */
 
-.header {
+.header{
 
 display:flex;
 justify-content:space-between;
 align-items:center;
 
 margin-bottom:15px;
-
 }
 
 /* LOGOUT */
 
-.logout-btn {
+.logout-btn{
 
 background:#6b7280;
 color:white;
@@ -67,32 +62,38 @@ padding:8px 14px;
 border-radius:8px;
 
 cursor:pointer;
-
 }
 
 /* SEARCH */
 
-.search-box {
+.search-box{
 
 width:100%;
-
 padding:12px;
 
 border-radius:10px;
 
 border:1px solid #ccc;
 
-font-size:16px;
+margin-bottom:12px;
 
-margin-bottom:15px;
+}
 
-background:white;
+/* CATEGORY */
+
+.category{
+
+font-weight:bold;
+
+margin-top:15px;
+
+color:#333;
 
 }
 
 /* CARD */
 
-.card {
+.card{
 
 background:white;
 
@@ -110,109 +111,15 @@ display:flex;
 justify-content:space-between;
 
 align-items:center;
-
-}
-
-/* LEFT */
-
-.item-left {
-
-display:flex;
-
-align-items:center;
-
-gap:10px;
-
-font-size:16px;
-
-}
-
-/* DROPDOWN */
-
-select {
-
-padding:6px;
-
-border-radius:6px;
-
-border:1px solid #ccc;
-
-}
-
-/* COUNT DISPLAY */
-
-.count-box {
-
-text-align:center;
-
-margin-bottom:10px;
-
-font-weight:bold;
-
-color:#333;
-
-}
-
-/* CUSTOM ITEM */
-
-.custom-box {
-
-display:flex;
-
-gap:8px;
-
-background:white;
-
-padding:12px;
-
-border-radius:12px;
-
-margin-bottom:12px;
-
-box-shadow:
-0 4px 10px rgba(0,0,0,0.08);
-
-}
-
-.custom-box input {
-
-flex:1;
-
-padding:8px;
-
-border-radius:6px;
-
-border:1px solid #ccc;
-
-}
-
-/* ADD BUTTON */
-
-.add-btn {
-
-background:#3b82f6;
-
-color:white;
-
-border:none;
-
-padding:8px 12px;
-
-border-radius:8px;
-
-cursor:pointer;
-
 }
 
 /* SUBMIT */
 
-.submit-btn {
+.submit-btn{
 
 width:100%;
 
 padding:14px;
-
-font-size:16px;
 
 margin-top:10px;
 
@@ -234,6 +141,32 @@ cursor:pointer;
 
 }
 
+/* CUSTOM ITEM */
+
+.custom-box{
+
+background:white;
+
+padding:12px;
+
+border-radius:12px;
+
+margin-bottom:12px;
+
+display:flex;
+gap:6px;
+
+}
+
+.custom-box input,
+.custom-box select{
+
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+
+}
+
 </style>
 
 </head>
@@ -242,13 +175,12 @@ cursor:pointer;
 
 <div class="container">
 
-<!-- HEADER -->
-
 <div class="header">
 
 <h2>Shoba Dashboard</h2>
 
-<button class="logout-btn"
+<button
+class="logout-btn"
 onclick="logout()">
 
 Logout
@@ -257,23 +189,13 @@ Logout
 
 </div>
 
-<!-- SEARCH -->
-
 <input
 type="text"
 id="searchInput"
 class="search-box"
-placeholder="🔍 Search items..."
+placeholder="🔍 Search items"
 onkeyup="searchItems()"
 >
-
-<!-- ITEM COUNT -->
-
-<div class="count-box">
-
-Items Selected: <span id="itemCount">0</span>
-
-</div>
 
 <!-- CUSTOM ITEM -->
 
@@ -282,39 +204,67 @@ Items Selected: <span id="itemCount">0</span>
 <input
 type="text"
 id="customItem"
-placeholder="Add new item"
->
+placeholder="New Item Name">
 
-<select id="customQty">
+<select id="customCategory">
 
-<option>1 piece</option>
-<option>2 pieces</option>
-<option>5 pieces</option>
-<option>10 pieces</option>
+<option value="liquid">Liquid</option>
 
-<option>250 g</option>
-<option>500 g</option>
-<option>1 kg</option>
+<option value="bulk">Bulk</option>
 
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
+<option value="small">Small</option>
+
+<option value="packet">Packet</option>
+
+<option value="sachet">Sachet</option>
 
 </select>
 
-<button
-class="add-btn"
-onclick="addCustomItem()">
-
+<button onclick="addCustomItem()">
 Add
-
 </button>
 
 </div>
 
-<!-- ITEMS -->
+<!-- LIQUIDS -->
 
-<div id="itemContainer"></div>
+<div class="category">
+Liquids
+</div>
+
+<div id="liquidList"></div>
+
+<!-- BULK -->
+
+<div class="category">
+Bulk Items
+</div>
+
+<div id="bulkList"></div>
+
+<!-- SMALL -->
+
+<div class="category">
+Small Items
+</div>
+
+<div id="smallList"></div>
+
+<!-- PACKET -->
+
+<div class="category">
+Packet Foods
+</div>
+
+<div id="packetList"></div>
+
+<!-- SACHET -->
+
+<div class="category">
+Sachets
+</div>
+
+<div id="sachetList"></div>
 
 <button
 class="submit-btn"
@@ -328,62 +278,110 @@ Submit List
 
 <script>
 
+/* CATEGORY QUANTITIES */
+
+const quantities={
+
+liquid:[
+"250 ml",
+"500 ml",
+"750 ml",
+"1 L",
+"1.5 L",
+"2 L"
+],
+
+bulk:[
+"250 g",
+"500 g",
+"750 g",
+"1 kg",
+"1.5 kg",
+"2 kg"
+],
+
+small:[
+"50 g",
+"100 g",
+"250 g"
+],
+
+packet:[
+"1 packet",
+"2 packets",
+"3 packets",
+"50 g",
+"100 g"
+],
+
+sachet:[
+"1 sachet",
+"2 sachets",
+"3 sachets"
+]
+
+};
+
+/* DEFAULT ITEMS */
+
+let items={
+
+liquid:["Oil","Milk"],
+
+bulk:["Rice","Wheat Flour"],
+
+small:["Mustard","Pepper"],
+
+packet:["Chips","Masala"],
+
+sachet:["Shampoo"]
+
+};
+
 /* LOAD ITEMS */
 
 function loadItems(){
 
-let savedItems =
-JSON.parse(
-localStorage.getItem("savedItems")
-) || [
+for(let category in items){
 
-"Rice",
-"Oil",
-"Sugar",
-"Milk"
-
-];
-
-let container =
+let container=
 document.getElementById(
-"itemContainer"
+category+"List"
 );
 
 container.innerHTML="";
 
-savedItems.forEach(function(name){
+items[category].forEach(name=>{
 
-let card =
+let card=
 document.createElement("div");
 
 card.className="card item";
 
+let selectOptions="";
+
+quantities[category].forEach(q=>{
+
+selectOptions+=
+`<option>${q}</option>`;
+
+});
+
 card.innerHTML=
 
 `
-<div class="item-left">
+<div>
 
 <input type="checkbox"
-value="${name}"
-onclick="updateCount();resetSearch()">
+value="${name}">
 
-<span>${name}</span>
+${name}
 
 </div>
 
 <select id="${name}">
 
-<option>1 piece</option>
-<option>2 pieces</option>
-<option>5 pieces</option>
-
-<option>250 g</option>
-<option>500 g</option>
-<option>1 kg</option>
-
-<option>250 ml</option>
-<option>500 ml</option>
-<option>1 L</option>
+${selectOptions}
 
 </select>
 `;
@@ -394,90 +392,62 @@ container.appendChild(card);
 
 }
 
-/* SEARCH */
-
-function searchItems(){
-
-let input =
-document.getElementById("searchInput");
-
-let filter =
-input.value.toLowerCase();
-
-let items =
-document.getElementsByClassName("item");
-
-for(let i=0;i<items.length;i++){
-
-let text =
-items[i].innerText.toLowerCase();
-
-items[i].style.display =
-text.includes(filter) ? "" : "none";
-
-}
-
-}
-
-/* RESET SEARCH */
-
-function resetSearch(){
-
-document.getElementById(
-"searchInput"
-).value="";
-
-searchItems();
-
-}
-
-/* UPDATE COUNT */
-
-function updateCount(){
-
-let count =
-document.querySelectorAll(
-'input[type="checkbox"]:checked'
-).length;
-
-document.getElementById(
-"itemCount"
-).innerText=count;
-
 }
 
 /* ADD CUSTOM ITEM */
 
 function addCustomItem(){
 
-let name =
+let name=
 document.getElementById(
 "customItem"
-).value.trim();
+).value;
+
+let category=
+document.getElementById(
+"customCategory"
+).value;
 
 if(name==="") return;
 
-let savedItems =
-JSON.parse(
-localStorage.getItem("savedItems")
-) || [];
-
-if(!savedItems.includes(name)){
-
-savedItems.push(name);
+items[category].push(name);
 
 localStorage.setItem(
-"savedItems",
-JSON.stringify(savedItems)
+"categoryItems",
+JSON.stringify(items)
 );
 
-}
+loadItems();
 
 document.getElementById(
 "customItem"
 ).value="";
 
-loadItems();
+}
+
+/* SEARCH */
+
+function searchItems(){
+
+let filter=
+document.getElementById(
+"searchInput"
+).value.toLowerCase();
+
+let itemsList=
+document.getElementsByClassName(
+"item"
+);
+
+for(let i=0;i<itemsList.length;i++){
+
+let text=
+itemsList[i].innerText.toLowerCase();
+
+itemsList[i].style.display=
+text.includes(filter)?"":"none";
+
+}
 
 }
 
@@ -485,14 +455,14 @@ loadItems();
 
 function submitList(){
 
-let checked =
+let checked=
 document.querySelectorAll(
 'input[type="checkbox"]:checked'
 );
 
 let list=[];
 
-checked.forEach(function(item){
+checked.forEach(item=>{
 
 let name=item.value;
 
@@ -503,25 +473,20 @@ list.push(name+" - "+qty);
 
 });
 
-let history =
+let history=
 JSON.parse(
 localStorage.getItem("allLists")
-) || [];
+)||[];
 
 let now=new Date();
 
-let time=
-now.toLocaleString();
-
 history.push({
 
-time:time,
+time:now.toLocaleString(),
 
 items:list,
 
-status:"pending",
-
-amount:""
+status:"pending"
 
 });
 
@@ -530,11 +495,25 @@ localStorage.setItem(
 JSON.stringify(history)
 );
 
-/* AUTO LOGOUT */
-
 window.location.href="index.html";
 
 }
+
+/* LOAD SAVED ITEMS */
+
+let saved=
+localStorage.getItem(
+"categoryItems"
+);
+
+if(saved){
+
+items=
+JSON.parse(saved);
+
+}
+
+loadItems();
 
 /* LOGOUT */
 
@@ -543,10 +522,6 @@ function logout(){
 window.location.href="index.html";
 
 }
-
-/* INITIAL LOAD */
-
-window.onload=loadItems;
 
 </script>
 
