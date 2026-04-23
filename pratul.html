@@ -34,6 +34,7 @@ font-size:20px;
 .card{
 position:relative;
 margin-bottom:10px;
+padding:10px;
 }
 
 /* HIDE SECTIONS */
@@ -64,7 +65,7 @@ Logout
 
 </div>
 
-<!-- MAIN BUTTONS -->
+<!-- MAIN MENU -->
 
 <div id="mainMenu">
 
@@ -169,7 +170,8 @@ function showViewList(){
 
 document.getElementById("mainMenu").style.display="none";
 
-document.getElementById("viewSection").classList.remove("hidden");
+document.getElementById("viewSection")
+.classList.remove("hidden");
 
 loadHistory();
 
@@ -179,7 +181,8 @@ function showManageItems(){
 
 document.getElementById("mainMenu").style.display="none";
 
-document.getElementById("manageSection").classList.remove("hidden");
+document.getElementById("manageSection")
+.classList.remove("hidden");
 
 loadItems();
 
@@ -189,13 +192,15 @@ function goHome(){
 
 document.getElementById("mainMenu").style.display="block";
 
-document.getElementById("viewSection").classList.add("hidden");
+document.getElementById("viewSection")
+.classList.add("hidden");
 
-document.getElementById("manageSection").classList.add("hidden");
+document.getElementById("manageSection")
+.classList.add("hidden");
 
 }
 
-/* VIEW LIST FUNCTION */
+/* LOAD LIST HISTORY */
 
 function loadHistory(){
 
@@ -214,7 +219,7 @@ container.innerHTML="";
 history
 .slice()
 .reverse()
-.forEach(function(list,index){
+.forEach(function(list){
 
 let card=
 document.createElement("div");
@@ -270,7 +275,7 @@ container.appendChild(card);
 
 }
 
-/* LOAD ITEMS FOR MANAGEMENT */
+/* LOAD ITEMS WITH CATEGORY */
 
 function loadItems(){
 
@@ -296,7 +301,7 @@ document.getElementById("itemsBox");
 
 box.innerHTML="";
 
-/* CATEGORY DISPLAY */
+/* DISPLAY CATEGORY ITEMS */
 
 for(let category in items){
 
@@ -320,8 +325,46 @@ div.innerHTML=
 `
 <input
 type="text"
-value="${name}"
-data-category="${category}">
+value="${name}">
+
+<select>
+
+<option value="liquid"
+${category==="liquid"?"selected":""}>
+
+Liquids
+
+</option>
+
+<option value="bulk"
+${category==="bulk"?"selected":""}>
+
+Bulk
+
+</option>
+
+<option value="small"
+${category==="small"?"selected":""}>
+
+Small
+
+</option>
+
+<option value="packet"
+${category==="packet"?"selected":""}>
+
+Packet
+
+</option>
+
+<option value="sachet"
+${category==="sachet"?"selected":""}>
+
+Sachet
+
+</option>
+
+</select>
 
 <button
 onclick="removeItem(this)"
@@ -340,7 +383,7 @@ box.appendChild(div);
 
 }
 
-/* ADD ITEM */
+/* ADD NEW ITEM WITH CATEGORY */
 
 function addItem(){
 
@@ -357,8 +400,21 @@ div.innerHTML=
 `
 <input
 type="text"
-placeholder="New Item"
-data-category="bulk">
+placeholder="New Item">
+
+<select>
+
+<option value="liquid">Liquids</option>
+
+<option value="bulk">Bulk</option>
+
+<option value="small">Small</option>
+
+<option value="packet">Packet</option>
+
+<option value="sachet">Sachet</option>
+
+</select>
 
 <button
 onclick="removeItem(this)"
@@ -381,14 +437,12 @@ btn.parentElement.remove();
 
 }
 
-/* SAVE ITEMS */
+/* SAVE UPDATED ITEMS */
 
 function saveItems(){
 
-let inputs=
-document.querySelectorAll(
-"#itemsBox input"
-);
+let rows=
+document.querySelectorAll("#itemsBox .card");
 
 let newItems={
 
@@ -404,13 +458,13 @@ sachet:[]
 
 };
 
-inputs.forEach(input=>{
-
-let category=
-input.dataset.category || "bulk";
+rows.forEach(row=>{
 
 let name=
-input.value.trim();
+row.querySelector("input").value.trim();
+
+let category=
+row.querySelector("select").value;
 
 if(name!==""){
 
