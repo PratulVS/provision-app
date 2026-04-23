@@ -13,70 +13,33 @@ href="style.css">
 
 <style>
 
-/* CARD POSITION */
-
-.card{
-position:relative;
-}
-
-/* RED NEW */
+/* STATUS COLORS */
 
 .new-list{
 border-left:6px solid red;
 }
 
-/* GREEN COMPLETED */
-
 .completed-list{
 border-left:6px solid green;
 }
 
-/* DELETE BUTTON */
-
-.delete-btn{
-
-position:absolute;
-
-top:8px;
-right:8px;
-
-background:red;
-color:white;
-
-border:none;
-
-padding:4px 8px;
-
-border-radius:6px;
-
-cursor:pointer;
-
-}
-
-/* GREEN TICK */
-
 .tick{
-
 position:absolute;
-
 bottom:8px;
 right:10px;
-
-font-size:20px;
-
 color:green;
-
-font-weight:bold;
-
+font-size:20px;
 }
 
-/* EDIT FIELD */
+.card{
+position:relative;
+margin-bottom:10px;
+}
 
-.editItem{
+/* HIDE SECTIONS */
 
-width:75%;
-padding:6px;
-
+.hidden{
+display:none;
 }
 
 </style>
@@ -101,50 +64,85 @@ Logout
 
 </div>
 
-<!-- LIST HISTORY -->
+<!-- MAIN BUTTONS -->
+
+<div id="mainMenu">
+
+<button
+class="submit-btn"
+onclick="showViewList()">
+
+📋 View Provision List
+
+</button>
+
+<br><br>
+
+<button
+class="submit-btn"
+onclick="showManageItems()">
+
+⚙ Add / Remove / Rename Items
+
+</button>
+
+</div>
+
+<!-- VIEW LIST SECTION -->
+
+<div id="viewSection"
+class="hidden">
+
+<button
+class="logout-btn"
+onclick="goHome()">
+
+⬅ Back
+
+</button>
+
+<br><br>
 
 <div id="listHistory"></div>
 
-<!-- ITEM VIEW -->
+</div>
 
-<div id="itemView"
-style="display:none">
+<!-- MANAGE ITEMS SECTION -->
 
-<h3 id="listTime"></h3>
+<div id="manageSection"
+class="hidden">
 
-<div id="items"></div>
+<button
+class="logout-btn"
+onclick="goHome()">
+
+⬅ Back
+
+</button>
+
+<br><br>
+
+<h3>Manage Items</h3>
+
+<div id="itemsBox"></div>
+
+<br>
 
 <button
 class="add-btn"
-onclick="addNewItem()">
+onclick="addItem()">
 
-➕ Add Item
-
-</button>
-
-<input
-type="text"
-id="shopName"
-placeholder="Shop Name">
-
-<input
-type="number"
-id="amountPaid"
-placeholder="Total Amount">
-
-<button
-class="submit-btn"
-onclick="updateList()">
-
-Update List
+➕ Add New Item
 
 </button>
 
+<br><br>
+
 <button
 class="submit-btn"
-onclick="finishList()">
+onclick="saveItems()">
 
-Finish Purchase
+💾 Save Changes
 
 </button>
 
@@ -165,19 +163,49 @@ window.location.href="index.html";
 
 }
 
-/* LOAD HISTORY */
+/* NAVIGATION */
+
+function showViewList(){
+
+document.getElementById("mainMenu").style.display="none";
+
+document.getElementById("viewSection").classList.remove("hidden");
+
+loadHistory();
+
+}
+
+function showManageItems(){
+
+document.getElementById("mainMenu").style.display="none";
+
+document.getElementById("manageSection").classList.remove("hidden");
+
+loadItems();
+
+}
+
+function goHome(){
+
+document.getElementById("mainMenu").style.display="block";
+
+document.getElementById("viewSection").classList.add("hidden");
+
+document.getElementById("manageSection").classList.add("hidden");
+
+}
+
+/* VIEW LIST FUNCTION */
 
 function loadHistory(){
 
-let history =
+let history=
 JSON.parse(
 localStorage.getItem("allLists")
 )||[];
 
-let container =
-document.getElementById(
-"listHistory"
-);
+let container=
+document.getElementById("listHistory");
 
 container.innerHTML="";
 
@@ -188,15 +216,12 @@ history
 .reverse()
 .forEach(function(list,index){
 
-let actualIndex =
-history.length-1-index;
-
-let card =
+let card=
 document.createElement("div");
 
 card.className="card";
 
-/* STATUS COLORS */
+/* STATUS */
 
 if(list.status==="pending"){
 
@@ -210,7 +235,7 @@ card.classList.add("completed-list");
 
 }
 
-/* CARD CONTENT */
+/* CONTENT */
 
 card.innerHTML=
 
@@ -228,7 +253,7 @@ Amount: ₹${list.amount || "-"}
 
 if(list.status==="completed"){
 
-let tick =
+let tick=
 document.createElement("div");
 
 tick.className="tick";
@@ -239,83 +264,53 @@ card.appendChild(tick);
 
 }
 
-/* DELETE BUTTON */
-
-let deleteBtn =
-document.createElement("button");
-
-deleteBtn.innerText="🗑";
-
-deleteBtn.className="delete-btn";
-
-deleteBtn.onclick=function(e){
-
-e.stopPropagation();
-
-deleteList(actualIndex);
-
-};
-
-card.appendChild(deleteBtn);
-
-/* OPEN LIST */
-
-card.onclick=function(){
-
-openList(actualIndex);
-
-};
-
 container.appendChild(card);
 
 });
 
 }
 
-/* OPEN LIST */
+/* LOAD ITEMS FOR MANAGEMENT */
 
-function openList(index){
+function loadItems(){
 
-let history =
+let items=
 JSON.parse(
-localStorage.getItem("allLists")
-);
+localStorage.getItem("categoryItems")
+)||{
 
-let list =
-history[index];
+liquid:["Oil","Milk"],
 
-window.currentEditIndex=index;
+bulk:["Rice","Wheat Flour"],
 
-document.getElementById(
-"listHistory"
-).style.display="none";
+small:["Mustard","Pepper"],
 
-document.getElementById(
-"itemView"
-).style.display="block";
+packet:["Chips","Masala"],
 
-document.getElementById(
-"listTime"
-).innerText=list.time;
+sachet:["Shampoo"]
 
-document.getElementById(
-"shopName"
-).value=list.shop || "";
+};
 
-document.getElementById(
-"amountPaid"
-).value=list.amount || "";
+let box=
+document.getElementById("itemsBox");
 
-let itemsBox =
-document.getElementById("items");
+box.innerHTML="";
 
-itemsBox.innerHTML="";
+/* CATEGORY DISPLAY */
 
-/* LOAD ITEMS */
+for(let category in items){
 
-list.items.forEach(item=>{
+let title=
+document.createElement("h4");
 
-let div =
+title.innerText=
+category.toUpperCase();
+
+box.appendChild(title);
+
+items[category].forEach(name=>{
+
+let div=
 document.createElement("div");
 
 div.className="card";
@@ -325,8 +320,8 @@ div.innerHTML=
 `
 <input
 type="text"
-value="${item}"
-class="editItem">
+value="${name}"
+data-category="${category}">
 
 <button
 onclick="removeItem(this)"
@@ -337,20 +332,22 @@ style="background:red;color:white">
 </button>
 `;
 
-itemsBox.appendChild(div);
+box.appendChild(div);
 
 });
 
 }
 
+}
+
 /* ADD ITEM */
 
-function addNewItem(){
+function addItem(){
 
-let itemsBox =
-document.getElementById("items");
+let box=
+document.getElementById("itemsBox");
 
-let div =
+let div=
 document.createElement("div");
 
 div.className="card";
@@ -361,7 +358,7 @@ div.innerHTML=
 <input
 type="text"
 placeholder="New Item"
-class="editItem">
+data-category="bulk">
 
 <button
 onclick="removeItem(this)"
@@ -372,7 +369,7 @@ style="background:red;color:white">
 </button>
 `;
 
-itemsBox.appendChild(div);
+box.appendChild(div);
 
 }
 
@@ -384,130 +381,51 @@ btn.parentElement.remove();
 
 }
 
-/* UPDATE LIST */
+/* SAVE ITEMS */
 
-function updateList(){
+function saveItems(){
 
-let history =
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-let inputs =
+let inputs=
 document.querySelectorAll(
-".editItem"
+"#itemsBox input"
 );
 
-let updatedItems=[];
+let newItems={
+
+liquid:[],
+
+bulk:[],
+
+small:[],
+
+packet:[],
+
+sachet:[]
+
+};
 
 inputs.forEach(input=>{
 
-if(input.value.trim()!==""){
+let category=
+input.dataset.category || "bulk";
 
-updatedItems.push(
-input.value.trim()
-);
+let name=
+input.value.trim();
+
+if(name!==""){
+
+newItems[category].push(name);
 
 }
 
 });
 
-/* UPDATE ITEMS */
-
-history[
-window.currentEditIndex
-].items = updatedItems;
-
-/* UPDATE SHOP */
-
-history[
-window.currentEditIndex
-].shop =
-document.getElementById(
-"shopName"
-).value;
-
-/* UPDATE AMOUNT */
-
-history[
-window.currentEditIndex
-].amount =
-document.getElementById(
-"amountPaid"
-).value;
-
-/* SAVE */
-
 localStorage.setItem(
-"allLists",
-JSON.stringify(history)
+"categoryItems",
+JSON.stringify(newItems)
 );
 
-alert("List Updated!");
-
-location.reload();
-
-}
-
-/* FINISH LIST */
-
-function finishList(){
-
-let history =
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-history[
-window.currentEditIndex
-].status="completed";
-
-history[
-window.currentEditIndex
-].shop =
-document.getElementById(
-"shopName"
-).value;
-
-history[
-window.currentEditIndex
-].amount =
-document.getElementById(
-"amountPaid"
-).value;
-
-localStorage.setItem(
-"allLists",
-JSON.stringify(history)
-);
-
-alert("Purchase Completed!");
-
-location.reload();
-
-}
-
-/* DELETE */
-
-function deleteList(index){
-
-if(!confirm(
-"Delete this list?"
-)) return;
-
-let history =
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-history.splice(index,1);
-
-localStorage.setItem(
-"allLists",
-JSON.stringify(history)
-);
-
-location.reload();
+alert("Items Updated Successfully!");
 
 }
 
@@ -515,17 +433,11 @@ location.reload();
 
 function logout(){
 
-localStorage.removeItem(
-"isLoggedIn"
-);
+localStorage.removeItem("isLoggedIn");
 
 window.location.href="index.html";
 
 }
-
-/* LOAD */
-
-window.onload=loadHistory;
 
 </script>
 
