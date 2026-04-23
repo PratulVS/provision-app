@@ -178,7 +178,7 @@ border: 1px solid #ccc;
 
 }
 
-/* MOBILE FIX */
+/* MOBILE FIX BASE */
 
 input,
 select {
@@ -234,6 +234,7 @@ width: 320px;
 margin: auto;
 
 }
+
 /* ITEM ROW FULL WIDTH */
 
 .card.item {
@@ -307,5 +308,81 @@ flex: 1;
 .custom-box button {
 
 min-width: 70px;
+
+}
+
+/* ========================= */
+/* MOBILE ONLY FIX (IMPORTANT) */
+/* ========================= */
+
+@media (max-width: 480px) {
+
+/* Make item rows stretch properly */
+
+.card.item {
+
+width: 100%;
+
+padding: 12px;
+
+}
+
+/* Fix left text area */
+
+.card.item div {
+
+flex: 1;
+
+min-width: 0;
+
+}
+
+/* Fix dropdown width */
+
+.card.item select {
+
+width: 95px;
+
+min-width: 85px;
+
+font-size: 15px;
+
+}
+
+/* Fix custom input alignment */
+
+.custom-box {
+
+width: 100%;
+
+}
+
+.custom-box input {
+
+flex: 1;
+
+min-width: 0;
+
+}
+
+/* Fix Add button size */
+
+.custom-box button {
+
+width: 70px;
+
+padding: 10px;
+
+}
+
+/* Reduce side spacing */
+
+.container {
+
+padding-left: 6px;
+
+padding-right: 6px;
+
+}
 
 }
