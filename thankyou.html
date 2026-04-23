@@ -1,1 +1,124 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+<title>Thank You</title>
+
+<style>
+
+/* BODY */
+
+body {
+
+font-family:'Segoe UI',sans-serif;
+
+background: linear-gradient(
+135deg,
+#dbeafe,
+#fef9c3,
+#dcfce7
+);
+
+height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+}
+
+/* BOX */
+
+.box {
+
+background:white;
+
+padding:30px;
+
+border-radius:15px;
+
+box-shadow:
+0 4px 15px rgba(0,0,0,0.1);
+
+text-align:center;
+
+width:320px;
+
+}
+
+/* TITLE */
+
+h2 {
+
+color:#16a34a;
+
+margin-bottom:10px;
+
+}
+
+/* COUNTDOWN */
+
+.timer {
+
+font-size:18px;
+
+margin-top:10px;
+
+color:#333;
+
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>✅ Thank You!</h2>
+
+<p>Your provision list has been submitted successfully.</p>
+
+<p class="timer">
+
+Redirecting to Login in
+<span id="count">5</span>
+seconds...
+
+</p>
+
+</div>
+
+<script>
+
+/* COUNTDOWN */
+
+let seconds=5;
+
+let countdown=
+document.getElementById("count");
+
+let timer=setInterval(function(){
+
+seconds--;
+
+countdown.innerText=seconds;
+
+if(seconds<=0){
+
+clearInterval(timer);
+
+window.location.href="index.html";
+
+}
+
+},1000);
+
+</script>
+
+</body>
+
+</html>
