@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html>
-<!-- Firebase SDK -->
+
+<head>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet"
+href="style.css">
+
+<title>Shoba Dashboard</title>
+
+<!-- Firebase -->
 
 <script type="module">
 
@@ -10,7 +21,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getFirestore,
 collection,
-addDoc
+addDoc,
+getDocs
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -38,24 +50,11 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-/* Make db usable globally */
-
 window.db = db;
-window.addDoc = addDoc;
 window.collection = collection;
+window.addDoc = addDoc;
 
 </script>
-<head>
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-
-<meta name="theme-color" content="#22c55e">
-
-<link rel="stylesheet"
-href="style.css">
-
-<title>Shoba Provision List</title>
 
 </head>
 
@@ -79,11 +78,9 @@ Logout
 
 <input
 type="text"
-id="searchInput"
-class="search-box"
 placeholder="🔍 Search items"
-onkeyup="searchItems()"
->
+class="search-box"
+onkeyup="searchItems(this.value)">
 
 <!-- CUSTOM ITEM -->
 
@@ -97,7 +94,7 @@ placeholder="Item Name">
 <input
 type="text"
 id="customQty"
-placeholder="Quantity (Example: 1 L, 100 g, 2 packets)">
+placeholder="Quantity (Example: 1 L, 100 g)">
 
 <button
 class="add-btn"
@@ -109,22 +106,17 @@ Add
 
 </div>
 
-<!-- CATEGORY SECTIONS -->
+<!-- CATEGORY LISTS -->
 
-<div class="category">Liquids</div>
-<div id="liquidList"></div>
+<div id="liquidSection"></div>
 
-<div class="category">Bulk Items</div>
-<div id="bulkList"></div>
+<div id="bulkSection"></div>
 
-<div class="category">Small Items</div>
-<div id="smallList"></div>
+<div id="smallSection"></div>
 
-<div class="category">Packet Foods</div>
-<div id="packetList"></div>
+<div id="packetSection"></div>
 
-<div class="category">Sachets</div>
-<div id="sachetList"></div>
+<div id="sachetSection"></div>
 
 <button
 class="submit-btn"
@@ -140,7 +132,7 @@ Submit List
 
 /* DEFAULT ITEMS */
 
-let items={
+let defaultItems = {
 
 liquid:["Oil","Milk"],
 
@@ -154,184 +146,163 @@ sachet:["Shampoo"]
 
 };
 
-/* LOAD SAVED ITEMS */
+/* LOAD ITEMS */
 
-let savedItems=
-localStorage.getItem("categoryItems");
+window.onload=function(){
 
-if(savedItems){
-
-items=JSON.parse(savedItems);
-
-}
-
-/* DEFAULT QUANTITIES */
-
-const quantities={
-
-liquid:[
-"250 ml","500 ml","750 ml",
-"1 L","1.5 L","2 L"
-],
-
-bulk:[
-"250 g","500 g","750 g",
-"1 kg","1.5 kg","2 kg"
-],
-
-small:[
-"50 g","100 g","200 g"
-],
-
-packet:[
-"1 packet","2 packets","3 packets",
-"50 g","100 g"
-],
-
-sachet:[
-"1 sachet","2 sachets","3 sachets"
-]
+loadItems();
 
 };
 
-/* LOAD ITEMS */
+/* LOAD ITEMS FUNCTION */
 
 function loadItems(){
 
-for(let category in items){
+displayCategory("Liquids","liquid");
 
-let container=
-document.getElementById(category+"List");
+displayCategory("Bulk Items","bulk");
 
-container.innerHTML="";
+displayCategory("Small Items","small");
 
-items[category].forEach(name=>{
+displayCategory("Packet Foods","packet");
 
-let selectOptions="";
-
-/* CUSTOM QUANTITY */
-
-let savedQty=
-localStorage.getItem(name+"_qty");
-
-if(savedQty){
-
-selectOptions=
-`<option>${savedQty}</option>`;
+displayCategory("Sachets","sachet");
 
 }
 
-else{
+/* DISPLAY CATEGORY */
 
-quantities[category].forEach(q=>{
+function displayCategory(title,key){
 
-selectOptions+=
-`<option>${q}</option>`;
+let section =
+document.getElementById(key+"Section");
+
+section.innerHTML =
+`<div class="category">${title}</div>`;
+
+defaultItems[key].forEach(item=>{
+
+section.innerHTML += createItemRow(item,key);
 
 });
 
 }
 
-let card=
-document.createElement("div");
+/* CREATE ROW */
 
-card.className="card item";
+function createItemRow(item,category){
 
-card.innerHTML=
-
-`
-<div>
-
-<input type="checkbox"
-value="${name}">
-
-${name}
-
-</div>
-
-<select id="${name}">
-
-${selectOptions}
-
-</select>
-`;
-
-container.appendChild(card);
-
-});
-
-}
-
-}
-
-/* IMPROVED CATEGORY DETECTION */
-
-function detectCategory(qty){
-
-qty = qty.toLowerCase().trim();
+let qtyOptions="";
 
 /* LIQUID */
 
-if(qty.includes("ml") ||
-   qty.includes("l")){
+if(category==="liquid"){
 
-return "liquid";
+qtyOptions=`
+
+<option>250 ml</option>
+
+<option>500 ml</option>
+
+<option>1 L</option>
+
+`;
 
 }
 
-/* SACHET */
+/* BULK */
 
-if(qty.includes("sachet")){
+if(category==="bulk"){
 
-return "sachet";
+qtyOptions=`
+
+<option>250 g</option>
+
+<option>500 g</option>
+
+<option>750 g</option>
+
+<option>1 kg</option>
+
+<option>1.5 kg</option>
+
+<option>2 kg</option>
+
+`;
+
+}
+
+/* SMALL */
+
+if(category==="small"){
+
+qtyOptions=`
+
+<option>50 g</option>
+
+<option>100 g</option>
+
+<option>200 g</option>
+
+`;
 
 }
 
 /* PACKET */
 
-if(qty.includes("packet") ||
-   qty.includes("piece")){
+if(category==="packet"){
 
-return "packet";
+qtyOptions=`
 
-}
+<option>1 packet</option>
 
-/* KG ALWAYS BULK */
+<option>2 packet</option>
 
-if(qty.includes("kg")){
+<option>3 packet</option>
 
-return "bulk";
-
-}
-
-/* GRAMS LOGIC */
-
-if(qty.includes("g")){
-
-let number =
-parseFloat(qty);
-
-/* BELOW 250g → SMALL */
-
-if(number < 250){
-
-return "small";
+`;
 
 }
 
-/* 250g AND ABOVE → BULK */
+/* SACHET */
 
-else{
+if(category==="sachet"){
 
-return "bulk";
+qtyOptions=`
+
+<option>1 sachet</option>
+
+<option>2 sachet</option>
+
+<option>3 sachet</option>
+
+`;
 
 }
 
-}
+return `
 
-/* DEFAULT */
+<div class="card item">
 
-return "bulk";
+<div>
+
+<input
+type="checkbox"
+value="${item}">
+
+${item}
+
+</div>
+
+<select id="${item}">
+
+${qtyOptions}
+
+</select>
+
+</div>
+
+`;
 
 }
 
@@ -339,81 +310,68 @@ return "bulk";
 
 function addCustomItem(){
 
-let name=
-document.getElementById("customItem")
-.value.trim();
+let name =
+document.getElementById("customItem").value;
 
-let qty=
-document.getElementById("customQty")
-.value.trim();
+let qty =
+document.getElementById("customQty").value;
 
-if(name==="" || qty==="") return;
+if(name==="") return;
 
-let category=
-detectCategory(qty);
+/* AUTO CATEGORY */
 
-/* PREVENT DUPLICATE */
+let category="small";
 
-if(!items[category].includes(name)){
+if(qty.includes("L") || qty.includes("ml"))
 
-items[category].push(name);
+category="liquid";
+
+if(qty.includes("kg") || qty.includes("g")){
+
+let num=parseInt(qty);
+
+if(num>=250)
+
+category="bulk";
 
 }
 
-/* SAVE ITEMS */
+/* ADD TO CATEGORY */
 
-localStorage.setItem(
-"categoryItems",
-JSON.stringify(items)
-);
-
-/* SAVE QUANTITY */
-
-localStorage.setItem(
-name+"_qty",
-qty
-);
-
-/* REFRESH */
+defaultItems[category].push(name);
 
 loadItems();
 
-/* CLEAR INPUT */
-
-document.getElementById(
-"customItem"
-).value="";
-
-document.getElementById(
-"customQty"
-).value="";
+document.getElementById("customItem").value="";
+document.getElementById("customQty").value="";
 
 }
 
 /* SEARCH */
 
-function searchItems(){
+function searchItems(text){
 
-let filter=
-document.getElementById("searchInput")
-.value.toLowerCase();
+let items =
+document.querySelectorAll(".card");
 
-let itemsList=
-document.getElementsByClassName("item");
+text=text.toLowerCase();
 
-for(let i=0;i<itemsList.length;i++){
+items.forEach(item=>{
 
-let text=
-itemsList[i].innerText.toLowerCase();
+let name =
+item.innerText.toLowerCase();
 
-itemsList[i].style.display=
-text.includes(filter)?"":"none";
+item.style.display=
+name.includes(text)
+? "flex"
+: "none";
+
+});
 
 }
 
-}
+/* SUBMIT LIST TO FIREBASE */
 
-/* SUBMIT LIST */
 async function submitList(){
 
 let checked =
@@ -427,7 +385,7 @@ checked.forEach(item=>{
 
 let name=item.value;
 
-let qty=
+let qty =
 document.getElementById(name).value;
 
 list.push(name+" - "+qty);
@@ -436,15 +394,13 @@ list.push(name+" - "+qty);
 
 if(list.length===0){
 
-alert("Please select at least one item.");
+alert("Select at least one item");
 
 return;
 
 }
 
-/* Save to Firebase */
-
-try{
+/* SAVE TO FIREBASE */
 
 await addDoc(
 collection(db,"provisionLists"),
@@ -452,49 +408,17 @@ collection(db,"provisionLists"),
 
 time: new Date().toLocaleString(),
 
-items: list,
+items:list,
 
-status: "pending",
+status:"pending",
 
-shop: "",
+shop:"",
 
-amount: ""
-
-});
-
-alert("List Submitted Successfully!");
-
-window.location.href="thankyou.html";
+amount:""
 
 }
 
-catch(error){
-
-alert("Error saving list");
-
-console.log(error);
-
-}
-
-}
-let now=new Date();
-
-history.push({
-
-time: now.toLocaleString(),
-
-items: list,
-
-status: "pending"
-
-});
-
-localStorage.setItem(
-"allLists",
-JSON.stringify(history)
 );
-
-/* REDIRECT */
 
 window.location.href="thankyou.html";
 
@@ -507,10 +431,6 @@ function logout(){
 window.location.href="index.html";
 
 }
-
-/* INITIAL LOAD */
-
-loadItems();
 
 </script>
 
