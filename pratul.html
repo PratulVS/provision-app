@@ -6,13 +6,18 @@
 
 <style>
 
-/* Page Background */
-body {
-font-family: Arial, sans-serif;
+/* RESET */
+* {
 margin: 0;
-padding: 20px;
+padding: 0;
+box-sizing: border-box;
+}
 
-/* Attractive gradient background */
+/* BODY */
+body {
+
+font-family: 'Segoe UI', sans-serif;
+
 background: linear-gradient(
 135deg,
 #dbeafe,
@@ -21,43 +26,139 @@ background: linear-gradient(
 );
 
 min-height: 100vh;
+
+padding: 15px;
 }
 
-/* Title */
-h2 {
-text-align: center;
+/* MAIN CONTAINER */
+.container {
+
+max-width: 500px;
+
+margin: auto;
+
+}
+
+/* HEADER */
+.header {
+
+display: flex;
+justify-content: space-between;
+align-items: center;
+
+margin-bottom: 15px;
+
+}
+
+/* TITLE */
+.header-title {
+
+text-align: left;
+
+}
+
+.header-title h2 {
+
 color: #333;
-margin-bottom: 20px;
+
+margin-bottom: 3px;
+
 }
 
-/* List container */
-#list {
+.header-title p {
+
+color: #555;
+
+font-size: 14px;
+
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+
+padding: 8px 14px;
+
+background: #6b7280;
+
+color: white;
+
+border: none;
+
+border-radius: 8px;
+
+cursor: pointer;
+
+font-size: 14px;
+
+}
+
+.logout-btn:hover {
+
+opacity: 0.9;
+
+}
+
+/* EMPTY MESSAGE */
+.empty-message {
+
+text-align: center;
+
+color: #666;
+
+margin-top: 30px;
+
+}
+
+/* LIST */
+.list {
+
 list-style: none;
-padding: 0;
+
+margin-top: 10px;
+
 }
 
-/* Each list item */
-li {
+/* ITEM CARD */
+.card {
+
 background: white;
+
 padding: 14px;
-margin-bottom: 12px;
+
+margin-bottom: 10px;
+
 border-radius: 12px;
 
 box-shadow:
-0 4px 10px rgba(0,0,0,0.1);
+0 4px 10px rgba(0,0,0,0.08);
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
 
 font-size: 16px;
+
 }
 
-/* Checkbox spacing */
+/* CHECKBOX */
 input[type="checkbox"] {
-margin-right: 10px;
+
+transform: scale(1.2);
+
 }
 
-/* Button style */
-button {
+/* COMPLETE BUTTON */
+.complete-btn {
+
+width: 100%;
+
 padding: 14px;
+
 font-size: 16px;
+
+margin-top: 12px;
 
 background: linear-gradient(
 135deg,
@@ -66,12 +167,21 @@ background: linear-gradient(
 );
 
 color: white;
+
 border: none;
+
 border-radius: 10px;
-width: 100%;
 
 font-weight: bold;
-margin-top: 15px;
+
+cursor: pointer;
+
+}
+
+.complete-btn:hover {
+
+opacity: 0.9;
+
 }
 
 </style>
@@ -80,17 +190,61 @@ margin-top: 15px;
 
 <body>
 
-<h2>Pratul - Provision List</h2>
+<div class="container">
 
-<ul id="list"></ul>
+<!-- HEADER WITH LOGOUT -->
 
-<button onclick="clearList()">
-Mark Complete
+<div class="header">
+
+<div class="header-title">
+
+<h2>Pratul Dashboard</h2>
+
+<p>Items to be purchased</p>
+
+</div>
+
+<button
+class="logout-btn"
+onclick="logout()"
+>
+
+Logout
+
 </button>
+
+</div>
+
+<!-- LIST -->
+
+<ul id="list" class="list"></ul>
+
+<!-- EMPTY MESSAGE -->
+
+<div id="emptyMsg"
+class="empty-message">
+
+No items added yet
+
+</div>
+
+<!-- COMPLETE BUTTON -->
+
+<button
+class="complete-btn"
+onclick="clearList()"
+>
+
+Mark Complete
+
+</button>
+
+</div>
 
 <script>
 
-/* Load saved list */
+/* LOAD LIST */
+
 function loadList(){
 
 let data =
@@ -101,28 +255,38 @@ localStorage.getItem("provisionList")
 let ul =
 document.getElementById("list");
 
-/* Clear previous items */
+let emptyMsg =
+document.getElementById("emptyMsg");
+
 ul.innerHTML = "";
 
-if(data){
+if(data && data.length > 0){
+
+emptyMsg.style.display = "none";
 
 data.forEach(function(item){
 
 let li =
 document.createElement("li");
 
-/* Add checkbox */
+li.className = "card";
+
+/* Checkbox */
+
 let checkbox =
 document.createElement("input");
 
 checkbox.type = "checkbox";
 
-/* Add text */
+/* Text */
+
 let text =
 document.createTextNode(item);
 
-/* Add checkbox + text */
+/* Append */
+
 li.appendChild(checkbox);
+
 li.appendChild(text);
 
 ul.appendChild(li);
@@ -131,9 +295,16 @@ ul.appendChild(li);
 
 }
 
+else {
+
+emptyMsg.style.display = "block";
+
 }
 
-/* Clear completed list */
+}
+
+/* CLEAR LIST */
+
 function clearList(){
 
 localStorage.removeItem(
@@ -146,7 +317,17 @@ location.reload();
 
 }
 
-/* Run when page loads */
+/* LOGOUT FUNCTION */
+
+function logout(){
+
+window.location.href =
+"index.html";
+
+}
+
+/* LOAD ON START */
+
 window.onload = loadList;
 
 </script>
