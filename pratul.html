@@ -11,6 +11,54 @@ href="style.css">
 
 <title>Pratul Dashboard</title>
 
+<!-- Firebase -->
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs,
+updateDoc,
+doc,
+deleteDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* Firebase Config */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyAxK-JoTWUGHTZxOtE_UckLCwz-GJw4uWo",
+
+authDomain: "family-provision.firebaseapp.com",
+
+projectId: "family-provision",
+
+storageBucket: "family-provision.firebasestorage.app",
+
+messagingSenderId: "533219133266",
+
+appId: "1:533219133266:web:6a0b1846fd969a4abb5c8b"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+window.db=db;
+window.collection=collection;
+window.getDocs=getDocs;
+window.updateDoc=updateDoc;
+window.doc=doc;
+window.deleteDoc=deleteDoc;
+
+</script>
+
 <style>
 
 /* CARD */
@@ -87,8 +135,6 @@ cursor:pointer;
 
 }
 
-/* HIDDEN */
-
 .hidden{
 
 display:none;
@@ -117,48 +163,17 @@ Logout
 
 </div>
 
-<!-- MAIN MENU -->
-
-<div id="mainMenu">
-
 <button
 class="submit-btn"
-onclick="showViewList()">
+onclick="loadLists()">
 
-📋 View Provision List
+📋 View Provision Lists
 
 </button>
 
 <br><br>
 
-<button
-class="submit-btn"
-onclick="showManageItems()">
-
-⚙ Add / Remove / Rename Items
-
-</button>
-
-</div>
-
-<!-- VIEW LIST SECTION -->
-
-<div id="viewSection"
-class="hidden">
-
-<button
-class="logout-btn"
-onclick="goHome()">
-
-⬅ Back
-
-</button>
-
-<br><br>
-
-<div id="listHistory"></div>
-
-<!-- ITEM VIEW -->
+<div id="listContainer"></div>
 
 <div id="itemView"
 class="hidden">
@@ -195,115 +210,27 @@ Finish Purchase
 
 </div>
 
-<!-- MANAGE ITEMS SECTION -->
-
-<div id="manageSection"
-class="hidden">
-
-<button
-class="logout-btn"
-onclick="goHome()">
-
-⬅ Back
-
-</button>
-
-<br><br>
-
-<h3>Manage Items</h3>
-
-<div id="itemsBox"></div>
-
-<br>
-
-<button
-class="add-btn"
-onclick="addItem()">
-
-➕ Add New Item
-
-</button>
-
-<br><br>
-
-<button
-class="submit-btn"
-onclick="saveItems()">
-
-💾 Save Changes
-
-</button>
-
-</div>
-
-</div>
-
 <script>
 
-/* LOGIN CHECK */
+/* LOAD LISTS FROM FIREBASE */
 
-if(
-localStorage.getItem("isLoggedIn")
-!=="true"
-){
+async function loadLists(){
 
-window.location.href="index.html";
+let container =
+document.getElementById("listContainer");
 
-}
+container.innerHTML="Loading...";
 
-/* NAVIGATION */
-
-function showViewList(){
-
-document.getElementById("mainMenu").style.display="none";
-
-document.getElementById("viewSection")
-.classList.remove("hidden");
-
-loadHistory();
-
-}
-
-function showManageItems(){
-
-document.getElementById("mainMenu").style.display="none";
-
-document.getElementById("manageSection")
-.classList.remove("hidden");
-
-loadItems();
-
-}
-
-function goHome(){
-
-location.reload();
-
-}
-
-/* LOAD LIST HISTORY */
-
-function loadHistory(){
-
-let history=
-JSON.parse(
-localStorage.getItem("allLists")
-)||[];
-
-let container=
-document.getElementById("listHistory");
+let querySnapshot =
+await getDocs(
+collection(db,"provisionLists")
+);
 
 container.innerHTML="";
 
-/* NEWEST FIRST */
+querySnapshot.forEach(docSnap=>{
 
-history
-.slice()
-.reverse()
-.forEach(function(list,index){
-
-let actualIndex=
-history.length-1-index;
+let data=docSnap.data();
 
 let card=
 document.createElement("div");
@@ -312,68 +239,63 @@ card.className="card";
 
 /* STATUS */
 
-if(list.status==="pending"){
+if(data.status==="pending"){
 
 card.classList.add("new-list");
 
 }
 
-if(list.status==="completed"){
+if(data.status==="completed"){
 
 card.classList.add("completed-list");
 
 }
 
-/* CARD CONTENT */
-
 card.innerHTML=
 
 `
-<b>${list.time}</b>
-
+<b>${data.time}</b>
 <br>
-
-Items: ${list.items.length}
-
+Items: ${data.items.length}
 <br>
-
-Shop: ${list.shop || "-"}
-
+Shop: ${data.shop || "-"}
 <br>
-
-Amount: ₹${list.amount || "-"}
+Amount: ₹${data.amount || "-"}
 `;
 
-/* CLICK OPEN LIST */
+/* CLICK */
 
 card.onclick=function(){
 
-openList(actualIndex);
+openList(
+docSnap.id,
+data
+);
 
 };
 
-/* DELETE BUTTON */
+/* DELETE */
 
-let deleteBtn=
+let delBtn=
 document.createElement("button");
 
-deleteBtn.innerText="🗑";
+delBtn.innerText="🗑";
 
-deleteBtn.className="delete-btn";
+delBtn.className="delete-btn";
 
-deleteBtn.onclick=function(e){
+delBtn.onclick=function(e){
 
 e.stopPropagation();
 
-deleteList(actualIndex);
+deleteList(docSnap.id);
 
 };
 
-card.appendChild(deleteBtn);
+card.appendChild(delBtn);
 
 /* GREEN TICK */
 
-if(list.status==="completed"){
+if(data.status==="completed"){
 
 let tick=
 document.createElement("div");
@@ -394,42 +316,22 @@ container.appendChild(card);
 
 /* OPEN LIST */
 
-function openList(index){
+function openList(id,data){
 
-let history=
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-let list=
-history[index];
-
-window.currentIndex=index;
-
-/* SHOW ITEM VIEW */
+window.currentDoc=id;
 
 document.getElementById("itemView")
 .classList.remove("hidden");
 
 document.getElementById("listTime")
-.innerText=list.time;
-
-/* LOAD SHOP */
-
-document.getElementById("shopName")
-.value=list.shop || "";
-
-document.getElementById("amountPaid")
-.value=list.amount || "";
-
-/* LOAD ITEMS */
+.innerText=data.time;
 
 let itemsBox=
 document.getElementById("items");
 
 itemsBox.innerHTML="";
 
-list.items.forEach(item=>{
+data.items.forEach(item=>{
 
 let div=
 document.createElement("div");
@@ -440,7 +342,6 @@ div.innerHTML=
 
 `
 <input type="checkbox">
-
 ${item}
 `;
 
@@ -450,29 +351,29 @@ itemsBox.appendChild(div);
 
 }
 
-/* FINISH PURCHASE */
+/* FINISH */
 
-function finishList(){
+async function finishList(){
 
-let history=
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-history[window.currentIndex]
-.status="completed";
-
-history[window.currentIndex]
-.shop=
+let shop=
 document.getElementById("shopName").value;
 
-history[window.currentIndex]
-.amount=
+let amount=
 document.getElementById("amountPaid").value;
 
-localStorage.setItem(
-"allLists",
-JSON.stringify(history)
+await updateDoc(
+doc(db,"provisionLists",
+window.currentDoc),
+{
+
+status:"completed",
+
+shop:shop,
+
+amount:amount
+
+}
+
 );
 
 alert("Purchase Completed!");
@@ -481,214 +382,23 @@ location.reload();
 
 }
 
-/* DELETE LIST */
+/* DELETE */
 
-function deleteList(index){
+async function deleteList(id){
 
-if(!confirm("Delete this list?")) return;
+if(!confirm("Delete list?")) return;
 
-let history=
-JSON.parse(
-localStorage.getItem("allLists")
-);
-
-history.splice(index,1);
-
-localStorage.setItem(
-"allLists",
-JSON.stringify(history)
+await deleteDoc(
+doc(db,"provisionLists",id)
 );
 
 location.reload();
 
 }
 
-/* LOAD ITEMS */
-
-function loadItems(){
-
-let items=
-JSON.parse(
-localStorage.getItem("categoryItems")
-)||{
-
-liquid:["Oil","Milk"],
-
-bulk:["Rice","Wheat Flour"],
-
-small:["Mustard","Pepper"],
-
-packet:["Chips","Masala"],
-
-sachet:["Shampoo"]
-
-};
-
-let box=
-document.getElementById("itemsBox");
-
-box.innerHTML="";
-
-for(let category in items){
-
-let title=
-document.createElement("h4");
-
-title.innerText=category.toUpperCase();
-
-box.appendChild(title);
-
-items[category].forEach(name=>{
-
-let div=
-document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=
-
-`
-<input type="text" value="${name}">
-
-<select>
-
-<option value="liquid"
-${category==="liquid"?"selected":""}>Liquids</option>
-
-<option value="bulk"
-${category==="bulk"?"selected":""}>Bulk</option>
-
-<option value="small"
-${category==="small"?"selected":""}>Small</option>
-
-<option value="packet"
-${category==="packet"?"selected":""}>Packet</option>
-
-<option value="sachet"
-${category==="sachet"?"selected":""}>Sachet</option>
-
-</select>
-
-<button
-onclick="removeItem(this)"
-style="background:red;color:white">
-
-❌
-
-</button>
-`;
-
-box.appendChild(div);
-
-});
-
-}
-
-}
-
-/* ADD ITEM */
-
-function addItem(){
-
-let box=
-document.getElementById("itemsBox");
-
-let div=
-document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=
-
-`
-<input type="text" placeholder="New Item">
-
-<select>
-
-<option value="liquid">Liquids</option>
-
-<option value="bulk">Bulk</option>
-
-<option value="small">Small</option>
-
-<option value="packet">Packet</option>
-
-<option value="sachet">Sachet</option>
-
-</select>
-
-<button
-onclick="removeItem(this)"
-style="background:red;color:white">
-
-❌
-
-</button>
-`;
-
-box.appendChild(div);
-
-}
-
-/* REMOVE ITEM */
-
-function removeItem(btn){
-
-btn.parentElement.remove();
-
-}
-
-/* SAVE ITEMS */
-
-function saveItems(){
-
-let rows=
-document.querySelectorAll("#itemsBox .card");
-
-let newItems={
-
-liquid:[],
-
-bulk:[],
-
-small:[],
-
-packet:[],
-
-sachet:[]
-
-};
-
-rows.forEach(row=>{
-
-let name=
-row.querySelector("input").value.trim();
-
-let category=
-row.querySelector("select").value;
-
-if(name!==""){
-
-newItems[category].push(name);
-
-}
-
-});
-
-localStorage.setItem(
-"categoryItems",
-JSON.stringify(newItems)
-);
-
-alert("Items Updated Successfully!");
-
-}
-
 /* LOGOUT */
 
 function logout(){
-
-localStorage.removeItem("isLoggedIn");
 
 window.location.href="index.html";
 
