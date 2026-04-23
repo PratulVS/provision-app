@@ -24,30 +24,23 @@ collection,
 getDocs,
 updateDoc,
 doc,
-deleteDoc
+deleteDoc,
+setDoc
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* Firebase Config */
 
 const firebaseConfig = {
 
 apiKey: "AIzaSyAxK-JoTWUGHTZxOtE_UckLCwz-GJw4uWo",
-
 authDomain: "family-provision.firebaseapp.com",
-
 projectId: "family-provision",
-
 storageBucket: "family-provision.firebasestorage.app",
-
 messagingSenderId: "533219133266",
-
 appId: "1:533219133266:web:6a0b1846fd969a4abb5c8b"
 
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
 window.db=db;
@@ -56,30 +49,23 @@ window.getDocs=getDocs;
 window.updateDoc=updateDoc;
 window.doc=doc;
 window.deleteDoc=deleteDoc;
+window.setDoc=setDoc;
 
 </script>
 
 <style>
 
-/* CARD */
-
 .card{
 
-position:relative;
-
-margin-bottom:12px;
-
+background:white;
 padding:15px;
-
+margin-bottom:10px;
 border-radius:12px;
 
-background:white;
-
+position:relative;
 cursor:pointer;
 
 }
-
-/* RED NEW */
 
 .new-list{
 
@@ -87,48 +73,36 @@ border-left:6px solid red;
 
 }
 
-/* GREEN DONE */
-
 .completed-list{
 
 border-left:6px solid green;
 
 }
 
-/* GREEN TICK */
-
 .tick{
 
 position:absolute;
-
 bottom:8px;
-
 right:10px;
-
-font-size:18px;
 
 color:green;
 
-}
+font-size:18px;
 
-/* DELETE BUTTON */
+}
 
 .delete-btn{
 
 position:absolute;
-
 top:8px;
-
 right:10px;
 
 background:red;
-
 color:white;
 
 border:none;
 
 padding:5px 8px;
-
 border-radius:6px;
 
 cursor:pointer;
@@ -163,11 +137,40 @@ Logout
 
 </div>
 
+<!-- MENU -->
+
+<div id="mainMenu">
+
 <button
 class="submit-btn"
-onclick="loadLists()">
+onclick="showView()">
 
-📋 View Provision Lists
+📋 View Provision List
+
+</button>
+
+<br><br>
+
+<button
+class="submit-btn"
+onclick="showManage()">
+
+⚙ Add / Remove / Rename Items
+
+</button>
+
+</div>
+
+<!-- VIEW LIST -->
+
+<div id="viewSection"
+class="hidden">
+
+<button
+class="logout-btn"
+onclick="goHome()">
+
+⬅ Back
 
 </button>
 
@@ -210,25 +213,98 @@ Finish Purchase
 
 </div>
 
+<!-- MANAGE ITEMS -->
+
+<div id="manageSection"
+class="hidden">
+
+<button
+class="logout-btn"
+onclick="goHome()">
+
+⬅ Back
+
+</button>
+
+<br><br>
+
+<h3>Manage Items</h3>
+
+<div id="itemsBox"></div>
+
+<br>
+
+<button
+class="add-btn"
+onclick="addItem()">
+
+➕ Add New Item
+
+</button>
+
+<br><br>
+
+<button
+class="submit-btn"
+onclick="saveItems()">
+
+💾 Save Items
+
+</button>
+
+</div>
+
+</div>
+
 <script>
 
-/* LOAD LISTS FROM FIREBASE */
+/* NAVIGATION */
+
+function showView(){
+
+document.getElementById("mainMenu").style.display="none";
+
+document.getElementById("viewSection")
+.classList.remove("hidden");
+
+loadLists();
+
+}
+
+function showManage(){
+
+document.getElementById("mainMenu").style.display="none";
+
+document.getElementById("manageSection")
+.classList.remove("hidden");
+
+loadItems();
+
+}
+
+function goHome(){
+
+location.reload();
+
+}
+
+/* LOAD FIREBASE LISTS */
 
 async function loadLists(){
 
-let container =
+let container=
 document.getElementById("listContainer");
 
 container.innerHTML="Loading...";
 
-let querySnapshot =
+let snapshot=
 await getDocs(
 collection(db,"provisionLists")
 );
 
 container.innerHTML="";
 
-querySnapshot.forEach(docSnap=>{
+snapshot.forEach(docSnap=>{
 
 let data=docSnap.data();
 
@@ -237,19 +313,11 @@ document.createElement("div");
 
 card.className="card";
 
-/* STATUS */
-
-if(data.status==="pending"){
-
+if(data.status==="pending")
 card.classList.add("new-list");
 
-}
-
-if(data.status==="completed"){
-
+if(data.status==="completed")
 card.classList.add("completed-list");
-
-}
 
 card.innerHTML=
 
@@ -263,18 +331,11 @@ Shop: ${data.shop || "-"}
 Amount: ₹${data.amount || "-"}
 `;
 
-/* CLICK */
-
 card.onclick=function(){
 
-openList(
-docSnap.id,
-data
-);
+openList(docSnap.id,data);
 
 };
-
-/* DELETE */
 
 let delBtn=
 document.createElement("button");
@@ -292,8 +353,6 @@ deleteList(docSnap.id);
 };
 
 card.appendChild(delBtn);
-
-/* GREEN TICK */
 
 if(data.status==="completed"){
 
@@ -326,10 +385,10 @@ document.getElementById("itemView")
 document.getElementById("listTime")
 .innerText=data.time;
 
-let itemsBox=
+let box=
 document.getElementById("items");
 
-itemsBox.innerHTML="";
+box.innerHTML="";
 
 data.items.forEach(item=>{
 
@@ -345,7 +404,7 @@ div.innerHTML=
 ${item}
 `;
 
-itemsBox.appendChild(div);
+box.appendChild(div);
 
 });
 
@@ -367,16 +426,14 @@ window.currentDoc),
 {
 
 status:"completed",
-
 shop:shop,
-
 amount:amount
 
 }
 
 );
 
-alert("Purchase Completed!");
+alert("Purchase Completed");
 
 location.reload();
 
@@ -393,6 +450,173 @@ doc(db,"provisionLists",id)
 );
 
 location.reload();
+
+}
+
+/* MANAGE ITEMS */
+
+function loadItems(){
+
+let items=
+JSON.parse(
+localStorage.getItem("categoryItems")
+)||{
+
+liquid:["Oil","Milk"],
+bulk:["Rice","Wheat Flour"],
+small:["Mustard","Pepper"],
+packet:["Chips","Masala"],
+sachet:["Shampoo"]
+
+};
+
+let box=
+document.getElementById("itemsBox");
+
+box.innerHTML="";
+
+for(let category in items){
+
+let title=
+document.createElement("h4");
+
+title.innerText=
+category.toUpperCase();
+
+box.appendChild(title);
+
+items[category].forEach(name=>{
+
+let div=
+document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+
+`
+<input type="text" value="${name}">
+
+<select>
+
+<option value="liquid"
+${category==="liquid"?"selected":""}>Liquid</option>
+
+<option value="bulk"
+${category==="bulk"?"selected":""}>Bulk</option>
+
+<option value="small"
+${category==="small"?"selected":""}>Small</option>
+
+<option value="packet"
+${category==="packet"?"selected":""}>Packet</option>
+
+<option value="sachet"
+${category==="sachet"?"selected":""}>Sachet</option>
+
+</select>
+
+<button
+onclick="removeItem(this)"
+style="background:red;color:white">
+
+❌
+
+</button>
+`;
+
+box.appendChild(div);
+
+});
+
+}
+
+}
+
+/* ADD ITEM */
+
+function addItem(){
+
+let box=
+document.getElementById("itemsBox");
+
+let div=
+document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=
+
+`
+<input type="text" placeholder="New Item">
+
+<select>
+
+<option value="liquid">Liquid</option>
+<option value="bulk">Bulk</option>
+<option value="small">Small</option>
+<option value="packet">Packet</option>
+<option value="sachet">Sachet</option>
+
+</select>
+
+<button
+onclick="removeItem(this)"
+style="background:red;color:white">
+
+❌
+
+</button>
+`;
+
+box.appendChild(div);
+
+}
+
+/* REMOVE */
+
+function removeItem(btn){
+
+btn.parentElement.remove();
+
+}
+
+/* SAVE ITEMS */
+
+function saveItems(){
+
+let rows=
+document.querySelectorAll("#itemsBox .card");
+
+let newItems={
+
+liquid:[],
+bulk:[],
+small:[],
+packet:[],
+sachet:[]
+
+};
+
+rows.forEach(row=>{
+
+let name=
+row.querySelector("input").value;
+
+let cat=
+row.querySelector("select").value;
+
+if(name)
+newItems[cat].push(name);
+
+});
+
+localStorage.setItem(
+"categoryItems",
+JSON.stringify(newItems)
+);
+
+alert("Items Saved");
 
 }
 
