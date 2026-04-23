@@ -113,6 +113,48 @@ justify-content:space-between;
 align-items:center;
 }
 
+/* CUSTOM */
+
+.custom-box{
+
+background:white;
+
+padding:12px;
+
+border-radius:12px;
+
+margin-bottom:12px;
+
+display:flex;
+gap:6px;
+
+}
+
+.custom-box input{
+
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+
+}
+
+/* BUTTON */
+
+.add-btn{
+
+background:#3b82f6;
+color:white;
+
+border:none;
+
+padding:8px 12px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
 /* SUBMIT */
 
 .submit-btn{
@@ -138,32 +180,6 @@ border-radius:10px;
 font-weight:bold;
 
 cursor:pointer;
-
-}
-
-/* CUSTOM ITEM */
-
-.custom-box{
-
-background:white;
-
-padding:12px;
-
-border-radius:12px;
-
-margin-bottom:12px;
-
-display:flex;
-gap:6px;
-
-}
-
-.custom-box input,
-.custom-box select{
-
-padding:8px;
-border-radius:6px;
-border:1px solid #ccc;
 
 }
 
@@ -204,66 +220,38 @@ onkeyup="searchItems()"
 <input
 type="text"
 id="customItem"
-placeholder="New Item Name">
+placeholder="Item Name">
 
-<select id="customCategory">
+<input
+type="text"
+id="customQty"
+placeholder="Quantity (Example: 1 L, 100 g, 2 packets)">
 
-<option value="liquid">Liquid</option>
+<button
+class="add-btn"
+onclick="addCustomItem()">
 
-<option value="bulk">Bulk</option>
-
-<option value="small">Small</option>
-
-<option value="packet">Packet</option>
-
-<option value="sachet">Sachet</option>
-
-</select>
-
-<button onclick="addCustomItem()">
 Add
+
 </button>
 
 </div>
 
-<!-- LIQUIDS -->
+<!-- CATEGORY SECTIONS -->
 
-<div class="category">
-Liquids
-</div>
-
+<div class="category">Liquids</div>
 <div id="liquidList"></div>
 
-<!-- BULK -->
-
-<div class="category">
-Bulk Items
-</div>
-
+<div class="category">Bulk Items</div>
 <div id="bulkList"></div>
 
-<!-- SMALL -->
-
-<div class="category">
-Small Items
-</div>
-
+<div class="category">Small Items</div>
 <div id="smallList"></div>
 
-<!-- PACKET -->
-
-<div class="category">
-Packet Foods
-</div>
-
+<div class="category">Packet Foods</div>
 <div id="packetList"></div>
 
-<!-- SACHET -->
-
-<div class="category">
-Sachets
-</div>
-
+<div class="category">Sachets</div>
 <div id="sachetList"></div>
 
 <button
@@ -278,50 +266,6 @@ Submit List
 
 <script>
 
-/* CATEGORY QUANTITIES */
-
-const quantities={
-
-liquid:[
-"250 ml",
-"500 ml",
-"750 ml",
-"1 L",
-"1.5 L",
-"2 L"
-],
-
-bulk:[
-"250 g",
-"500 g",
-"750 g",
-"1 kg",
-"1.5 kg",
-"2 kg"
-],
-
-small:[
-"50 g",
-"100 g",
-"250 g"
-],
-
-packet:[
-"1 packet",
-"2 packets",
-"3 packets",
-"50 g",
-"100 g"
-],
-
-sachet:[
-"1 sachet",
-"2 sachets",
-"3 sachets"
-]
-
-};
-
 /* DEFAULT ITEMS */
 
 let items={
@@ -335,6 +279,48 @@ small:["Mustard","Pepper"],
 packet:["Chips","Masala"],
 
 sachet:["Shampoo"]
+
+};
+
+/* LOAD SAVED ITEMS */
+
+let savedItems=
+localStorage.getItem(
+"categoryItems"
+);
+
+if(savedItems){
+
+items=JSON.parse(savedItems);
+
+}
+
+/* DEFAULT QUANTITIES */
+
+const quantities={
+
+liquid:[
+"250 ml","500 ml","750 ml",
+"1 L","1.5 L","2 L"
+],
+
+bulk:[
+"250 g","500 g","750 g",
+"1 kg","1.5 kg","2 kg"
+],
+
+small:[
+"50 g","100 g","250 g"
+],
+
+packet:[
+"1 packet","2 packets","3 packets",
+"50 g","100 g"
+],
+
+sachet:[
+"1 sachet","2 sachets","3 sachets"
+]
 
 };
 
@@ -353,12 +339,23 @@ container.innerHTML="";
 
 items[category].forEach(name=>{
 
-let card=
-document.createElement("div");
-
-card.className="card item";
-
 let selectOptions="";
+
+/* CUSTOM QUANTITY */
+
+let savedQty=
+localStorage.getItem(
+name+"_qty"
+);
+
+if(savedQty){
+
+selectOptions=
+`<option>${savedQty}</option>`;
+
+}
+
+else{
 
 quantities[category].forEach(q=>{
 
@@ -366,6 +363,13 @@ selectOptions+=
 `<option>${q}</option>`;
 
 });
+
+}
+
+let card=
+document.createElement("div");
+
+card.className="card item";
 
 card.innerHTML=
 
@@ -394,6 +398,49 @@ container.appendChild(card);
 
 }
 
+/* AUTO CATEGORY DETECTION */
+
+function detectCategory(qty){
+
+qty=qty.toLowerCase();
+
+if(qty.includes("ml") ||
+   qty.includes("l")){
+
+return "liquid";
+
+}
+
+if(qty.includes("sachet")){
+
+return "sachet";
+
+}
+
+if(qty.includes("packet") ||
+   qty.includes("piece")){
+
+return "packet";
+
+}
+
+if(qty.includes("g")){
+
+if(qty.includes("50") ||
+   qty.includes("100")){
+
+return "small";
+
+}
+
+return "bulk";
+
+}
+
+return "bulk";
+
+}
+
 /* ADD CUSTOM ITEM */
 
 function addCustomItem(){
@@ -401,26 +448,50 @@ function addCustomItem(){
 let name=
 document.getElementById(
 "customItem"
-).value;
+).value.trim();
+
+let qty=
+document.getElementById(
+"customQty"
+).value.trim();
+
+if(name==="" || qty==="") return;
 
 let category=
-document.getElementById(
-"customCategory"
-).value;
+detectCategory(qty);
 
-if(name==="") return;
+/* PREVENT DUPLICATE */
+
+if(!items[category].includes(name)){
 
 items[category].push(name);
+
+}
+
+/* SAVE */
 
 localStorage.setItem(
 "categoryItems",
 JSON.stringify(items)
 );
 
+/* SAVE QUANTITY */
+
+localStorage.setItem(
+name+"_qty",
+qty
+);
+
+/* REFRESH */
+
 loadItems();
 
 document.getElementById(
 "customItem"
+).value="";
+
+document.getElementById(
+"customQty"
 ).value="";
 
 }
@@ -495,25 +566,11 @@ localStorage.setItem(
 JSON.stringify(history)
 );
 
+/* AUTO LOGOUT */
+
 window.location.href="index.html";
 
 }
-
-/* LOAD SAVED ITEMS */
-
-let saved=
-localStorage.getItem(
-"categoryItems"
-);
-
-if(saved){
-
-items=
-JSON.parse(saved);
-
-}
-
-loadItems();
 
 /* LOGOUT */
 
@@ -522,6 +579,10 @@ function logout(){
 window.location.href="index.html";
 
 }
+
+/* INITIAL LOAD */
+
+loadItems();
 
 </script>
 
