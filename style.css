@@ -1,0 +1,236 @@
+/* MOBILE VIEWPORT FRIENDLY BASE */
+
+body {
+
+font-family: 'Segoe UI', sans-serif;
+
+margin: 0;
+padding: 15px;
+
+/* Mobile gradient background */
+
+background: linear-gradient(
+135deg,
+#dbeafe,
+#fef9c3,
+#dcfce7
+);
+
+min-height: 100vh;
+
+}
+
+/* CONTAINER */
+
+.container {
+
+width: 100%;
+max-width: 500px;
+
+margin: auto;
+
+}
+
+/* HEADER */
+
+.header {
+
+display: flex;
+justify-content: space-between;
+align-items: center;
+
+margin-bottom: 15px;
+
+}
+
+/* BUTTONS */
+
+button {
+
+font-size: 16px;
+
+padding: 12px;
+
+border-radius: 10px;
+
+border: none;
+
+cursor: pointer;
+
+}
+
+/* LOGOUT */
+
+.logout-btn {
+
+background: #6b7280;
+
+color: white;
+
+}
+
+/* ADD BUTTON */
+
+.add-btn {
+
+background: #3b82f6;
+
+color: white;
+
+}
+
+/* SUBMIT */
+
+.submit-btn {
+
+width: 100%;
+
+margin-top: 15px;
+
+background: linear-gradient(
+135deg,
+#22c55e,
+#16a34a
+);
+
+color: white;
+
+font-weight: bold;
+
+}
+
+/* SEARCH */
+
+.search-box {
+
+width: 100%;
+
+padding: 12px;
+
+border-radius: 10px;
+
+border: 1px solid #ccc;
+
+margin-bottom: 12px;
+
+}
+
+/* CATEGORY */
+
+.category {
+
+font-weight: bold;
+
+margin-top: 18px;
+
+color: #333;
+
+}
+
+/* ITEM CARD */
+
+.card {
+
+background: white;
+
+padding: 14px;
+
+margin-bottom: 10px;
+
+border-radius: 12px;
+
+box-shadow:
+0 4px 10px rgba(0,0,0,0.08);
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+}
+
+/* CUSTOM INPUT */
+
+.custom-box {
+
+background: white;
+
+padding: 12px;
+
+border-radius: 12px;
+
+margin-bottom: 12px;
+
+display: flex;
+
+gap: 6px;
+
+}
+
+.custom-box input {
+
+padding: 8px;
+
+border-radius: 6px;
+
+border: 1px solid #ccc;
+
+}
+
+/* MOBILE FIX */
+
+input,
+select {
+
+font-size: 16px;
+
+padding: 8px;
+
+border-radius: 6px;
+
+border: 1px solid #ccc;
+
+}
+
+/* LOGIN PAGE */
+
+.login-container {
+
+background: white;
+
+padding: 30px;
+
+border-radius: 15px;
+
+width: 100%;
+
+max-width: 320px;
+
+box-shadow:
+0 4px 15px rgba(0,0,0,0.1);
+
+text-align: center;
+
+}
+
+/* THANK YOU PAGE */
+
+.thankyou-box {
+
+background: white;
+
+padding: 30px;
+
+border-radius: 15px;
+
+box-shadow:
+0 4px 15px rgba(0,0,0,0.1);
+
+text-align: center;
+
+width: 320px;
+
+margin: auto;
+
+}
