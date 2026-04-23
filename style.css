@@ -234,3 +234,78 @@ width: 320px;
 margin: auto;
 
 }
+/* ITEM ROW FULL WIDTH */
+
+.card.item {
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+width: 100%;
+
+box-sizing: border-box;
+
+}
+
+/* LEFT SIDE (CHECKBOX + NAME) */
+
+.card.item div {
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+flex: 1;
+
+}
+
+/* DROPDOWN RIGHT ALIGN */
+
+.card.item select {
+
+min-width: 110px;
+
+max-width: 140px;
+
+}
+
+/* CATEGORY CONTAINER FULL WIDTH */
+
+#liquidList,
+#bulkList,
+#smallList,
+#packetList,
+#sachetList {
+
+width: 100%;
+
+}
+
+/* CUSTOM INPUT ROW ALIGN */
+
+.custom-box {
+
+display: flex;
+
+gap: 10px;
+
+flex-wrap: nowrap;
+
+}
+
+.custom-box input {
+
+flex: 1;
+
+}
+
+.custom-box button {
+
+min-width: 70px;
+
+}
