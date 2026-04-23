@@ -1,6 +1,50 @@
 <!DOCTYPE html>
 <html>
+<!-- Firebase SDK -->
 
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* Firebase Config */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyAxK-JoTWUGHTZxOtE_UckLCwz-GJw4uWo",
+
+authDomain: "family-provision.firebaseapp.com",
+
+projectId: "family-provision",
+
+storageBucket: "family-provision.firebasestorage.app",
+
+messagingSenderId: "533219133266",
+
+appId: "1:533219133266:web:6a0b1846fd969a4abb5c8b"
+
+};
+
+/* Initialize */
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+/* Make db usable globally */
+
+window.db = db;
+window.addDoc = addDoc;
+window.collection = collection;
+
+</script>
 <head>
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
