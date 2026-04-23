@@ -6,36 +6,71 @@
 <style>
 
 body {
-font-family: Arial;
-margin: 20px;
-background: #f5f5f5;
+font-family: Arial, sans-serif;
+margin: 0;
+padding: 20px;
+
+/* Attractive gradient background */
+background: linear-gradient(
+135deg,
+#dbeafe,
+#fef9c3,
+#dcfce7
+);
+
+min-height: 100vh;
 }
 
+h2 {
+text-align: center;
+color: #333;
+margin-bottom: 20px;
+}
+
+/* Card styling */
 .card {
 background: white;
 padding: 15px;
-margin-bottom: 10px;
-border-radius: 10px;
-box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+margin-bottom: 12px;
+border-radius: 12px;
+
+box-shadow:
+0 4px 10px rgba(0,0,0,0.1);
 }
 
+/* Button styling */
 button {
-padding: 12px;
+padding: 14px;
 font-size: 16px;
-background: green;
+
+background: linear-gradient(
+135deg,
+#22c55e,
+#16a34a
+);
+
 color: white;
 border: none;
-border-radius: 8px;
+border-radius: 10px;
 width: 100%;
+
+font-weight: bold;
 }
 
+/* Dropdown */
 select {
 margin-left: 10px;
-padding: 5px;
+padding: 6px;
+border-radius: 6px;
+border: 1px solid #ccc;
+}
+
+/* Checkbox spacing */
+input[type="checkbox"] {
+margin-right: 8px;
 }
 
 </style>
-
 </head>
 
 <body>
