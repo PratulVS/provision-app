@@ -414,10 +414,9 @@ text.includes(filter)?"":"none";
 }
 
 /* SUBMIT LIST */
+async function submitList(){
 
-function submitList(){
-
-let checked=
+let checked =
 document.querySelectorAll(
 'input[type="checkbox"]:checked'
 );
@@ -443,11 +442,41 @@ return;
 
 }
 
-let history=
-JSON.parse(
-localStorage.getItem("allLists")
-)||[];
+/* Save to Firebase */
 
+try{
+
+await addDoc(
+collection(db,"provisionLists"),
+{
+
+time: new Date().toLocaleString(),
+
+items: list,
+
+status: "pending",
+
+shop: "",
+
+amount: ""
+
+});
+
+alert("List Submitted Successfully!");
+
+window.location.href="thankyou.html";
+
+}
+
+catch(error){
+
+alert("Error saving list");
+
+console.log(error);
+
+}
+
+}
 let now=new Date();
 
 history.push({
