@@ -11,6 +11,71 @@ href="style.css">
 
 <title>Pratul Dashboard</title>
 
+<style>
+
+/* CARD POSITION FIX */
+
+.card{
+position:relative;
+}
+
+/* RED NEW LIST */
+
+.new-list{
+
+border-left:6px solid red;
+
+}
+
+/* GREEN COMPLETED */
+
+.completed-list{
+
+border-left:6px solid green;
+
+}
+
+/* DELETE BUTTON */
+
+.delete-btn{
+
+position:absolute;
+
+top:8px;
+right:8px;
+
+background:red;
+color:white;
+
+border:none;
+
+padding:4px 8px;
+
+border-radius:6px;
+
+cursor:pointer;
+
+}
+
+/* GREEN TICK */
+
+.tick{
+
+position:absolute;
+
+bottom:8px;
+right:10px;
+
+font-size:20px;
+
+color:green;
+
+font-weight:bold;
+
+}
+
+</style>
+
 </head>
 
 <body>
@@ -31,7 +96,11 @@ Logout
 
 </div>
 
+<!-- LIST HISTORY -->
+
 <div id="listHistory"></div>
+
+<!-- ITEM VIEW -->
 
 <div id="itemView"
 style="display:none">
@@ -75,31 +144,58 @@ window.location.href="index.html";
 
 }
 
-/* LOAD HISTORY */
+/* LOAD LIST HISTORY */
 
 function loadHistory(){
 
-let history=
+let history =
 JSON.parse(
 localStorage.getItem("allLists")
 )||[];
 
-let container=
+let container =
 document.getElementById(
 "listHistory"
 );
 
 container.innerHTML="";
 
+/* NEWEST FIRST */
+
 history
 .slice()
 .reverse()
 .forEach(function(list,index){
 
-let card=
+let actualIndex =
+history.length-1-index;
+
+let card =
 document.createElement("div");
 
 card.className="card";
+
+/* RED FOR NEW */
+
+if(list.status==="pending"){
+
+card.classList.add(
+"new-list"
+);
+
+}
+
+/* GREEN FOR COMPLETED */
+
+if(list.status==="completed"){
+
+card.classList.add(
+"completed-list"
+);
+
+}
+
+/* CARD CONTENT */
 
 card.innerHTML=
 
@@ -107,13 +203,51 @@ card.innerHTML=
 <b>${list.time}</b>
 <br>
 Items: ${list.items.length}
+<br>
+Shop: ${list.shop || "-"}
+<br>
+Amount: ₹${list.amount || "-"}
 `;
+
+/* GREEN TICK */
+
+if(list.status==="completed"){
+
+let tick =
+document.createElement("div");
+
+tick.className="tick";
+
+tick.innerHTML="✔";
+
+card.appendChild(tick);
+
+}
+
+/* DELETE BUTTON */
+
+let deleteBtn =
+document.createElement("button");
+
+deleteBtn.innerText="🗑";
+
+deleteBtn.className="delete-btn";
+
+deleteBtn.onclick=function(e){
+
+e.stopPropagation();
+
+deleteList(actualIndex);
+
+};
+
+card.appendChild(deleteBtn);
+
+/* OPEN LIST */
 
 card.onclick=function(){
 
-openList(
-history.length-1-index
-);
+openList(actualIndex);
 
 };
 
@@ -127,12 +261,12 @@ container.appendChild(card);
 
 function openList(index){
 
-let history=
+let history =
 JSON.parse(
 localStorage.getItem("allLists")
 );
 
-let list=
+let list =
 history[index];
 
 document.getElementById(
@@ -147,16 +281,18 @@ document.getElementById(
 "listTime"
 ).innerText=list.time;
 
-let itemsBox=
+let itemsBox =
 document.getElementById(
 "items"
 );
 
 itemsBox.innerHTML="";
 
+/* DISPLAY ITEMS */
+
 list.items.forEach(item=>{
 
-let div=
+let div =
 document.createElement("div");
 
 div.className="card";
@@ -174,24 +310,26 @@ itemsBox.appendChild(div);
 
 }
 
-/* FINISH */
+/* FINISH LIST */
 
 function finishList(){
 
-let shop=
+let shop =
 document.getElementById(
 "shopName"
 ).value;
 
-let amount=
+let amount =
 document.getElementById(
 "amountPaid"
 ).value;
 
-let history=
+let history =
 JSON.parse(
 localStorage.getItem("allLists")
 );
+
+/* FIND LAST PENDING */
 
 for(let i=history.length-1;i>=0;i--){
 
@@ -220,6 +358,30 @@ location.reload();
 
 }
 
+/* DELETE LIST */
+
+function deleteList(index){
+
+if(!confirm(
+"Delete this list?"
+)) return;
+
+let history =
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+history.splice(index,1);
+
+localStorage.setItem(
+"allLists",
+JSON.stringify(history)
+);
+
+location.reload();
+
+}
+
 /* LOGOUT */
 
 function logout(){
@@ -228,12 +390,11 @@ localStorage.removeItem(
 "isLoggedIn"
 );
 
-window.location.href=
-"index.html";
+window.location.href="index.html";
 
 }
 
-/* LOAD */
+/* INITIAL LOAD */
 
 window.onload=loadHistory;
 
