@@ -8,15 +8,16 @@
 
 /* RESET */
 * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 /* BODY */
+
 body {
 
-font-family: 'Segoe UI', sans-serif;
+font-family:'Segoe UI',sans-serif;
 
 background: linear-gradient(
 135deg,
@@ -25,162 +26,170 @@ background: linear-gradient(
 #dcfce7
 );
 
-min-height: 100vh;
+padding:15px;
 
-padding: 15px;
+min-height:100vh;
+
 }
 
-/* MAIN CONTAINER */
+/* CONTAINER */
+
 .container {
 
-max-width: 500px;
-
-margin: auto;
+max-width:500px;
+margin:auto;
 
 }
 
 /* HEADER */
+
 .header {
 
-display: flex;
-justify-content: space-between;
-align-items: center;
+display:flex;
+justify-content:space-between;
+align-items:center;
 
-margin-bottom: 15px;
-
-}
-
-/* TITLE */
-.header-title {
-
-text-align: left;
+margin-bottom:15px;
 
 }
 
-.header-title h2 {
+/* LOGOUT */
 
-color: #333;
-
-margin-bottom: 3px;
-
-}
-
-.header-title p {
-
-color: #555;
-
-font-size: 14px;
-
-}
-
-/* LOGOUT BUTTON */
 .logout-btn {
 
-padding: 8px 14px;
+background:#6b7280;
+color:white;
 
-background: #6b7280;
+border:none;
 
-color: white;
+padding:8px 14px;
 
-border: none;
+border-radius:8px;
 
-border-radius: 8px;
-
-cursor: pointer;
-
-font-size: 14px;
+cursor:pointer;
 
 }
 
-.logout-btn:hover {
+/* LIST CARD */
 
-opacity: 0.9;
+.list-card {
 
-}
+background:white;
 
-/* EMPTY MESSAGE */
-.empty-message {
+padding:15px;
 
-text-align: center;
+border-radius:12px;
 
-color: #666;
-
-margin-top: 30px;
-
-}
-
-/* LIST */
-.list {
-
-list-style: none;
-
-margin-top: 10px;
-
-}
-
-/* ITEM CARD */
-.card {
-
-background: white;
-
-padding: 14px;
-
-margin-bottom: 10px;
-
-border-radius: 12px;
+margin-bottom:10px;
 
 box-shadow:
 0 4px 10px rgba(0,0,0,0.08);
 
-display: flex;
+cursor:pointer;
 
-align-items: center;
-
-gap: 10px;
-
-font-size: 16px;
+position:relative;
 
 }
 
-/* CHECKBOX */
-input[type="checkbox"] {
+/* NEW LIST HIGHLIGHT */
 
-transform: scale(1.2);
+.new-list {
+
+border-left:6px solid red;
 
 }
 
-/* COMPLETE BUTTON */
-.complete-btn {
+/* COMPLETED */
 
-width: 100%;
+.completed {
 
-padding: 14px;
+border-left:6px solid green;
 
-font-size: 16px;
+}
 
-margin-top: 12px;
+/* GREEN TICK */
 
-background: linear-gradient(
+.tick {
+
+position:absolute;
+
+bottom:8px;
+
+right:10px;
+
+font-size:20px;
+
+color:green;
+
+}
+
+/* ITEMS PAGE */
+
+.item-box {
+
+background:white;
+
+padding:12px;
+
+border-radius:10px;
+
+margin-bottom:8px;
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+}
+
+/* BUTTON */
+
+.finish-btn {
+
+width:100%;
+
+padding:14px;
+
+margin-top:10px;
+
+background:linear-gradient(
 135deg,
-#ef4444,
-#dc2626
+#22c55e,
+#16a34a
 );
 
-color: white;
+color:white;
 
-border: none;
+border:none;
 
-border-radius: 10px;
+border-radius:10px;
 
-font-weight: bold;
-
-cursor: pointer;
+font-weight:bold;
 
 }
 
-.complete-btn:hover {
+/* AMOUNT BOX */
 
-opacity: 0.9;
+.amount-box {
+
+margin-top:10px;
+
+display:flex;
+
+gap:10px;
+
+}
+
+.amount-box input {
+
+flex:1;
+
+padding:8px;
+
+border-radius:6px;
+
+border:1px solid #ccc;
 
 }
 
@@ -192,22 +201,15 @@ opacity: 0.9;
 
 <div class="container">
 
-<!-- HEADER WITH LOGOUT -->
+<!-- HEADER -->
 
 <div class="header">
 
-<div class="header-title">
-
 <h2>Pratul Dashboard</h2>
-
-<p>Items to be purchased</p>
-
-</div>
 
 <button
 class="logout-btn"
-onclick="logout()"
->
+onclick="logout()">
 
 Logout
 
@@ -215,100 +217,194 @@ Logout
 
 </div>
 
-<!-- LIST -->
+<!-- LIST HISTORY -->
 
-<ul id="list" class="list"></ul>
+<div id="listHistory"></div>
 
-<!-- EMPTY MESSAGE -->
+<!-- ITEM VIEW -->
 
-<div id="emptyMsg"
-class="empty-message">
+<div id="itemView" style="display:none">
 
-No items added yet
+<h3 id="listTime"></h3>
+
+<div id="items"></div>
+
+<!-- AMOUNT -->
+
+<div class="amount-box">
+
+<input
+type="number"
+id="amountPaid"
+placeholder="Enter total amount">
 
 </div>
 
-<!-- COMPLETE BUTTON -->
-
 <button
-class="complete-btn"
-onclick="clearList()"
->
+class="finish-btn"
+onclick="finishList()">
 
-Mark Complete
+Finish
 
 </button>
 
 </div>
 
+</div>
+
 <script>
 
-/* LOAD LIST */
+/* LOAD LIST HISTORY */
 
-function loadList(){
+function loadHistory(){
 
-let data =
+let history =
 JSON.parse(
-localStorage.getItem("provisionList")
+localStorage.getItem("allLists")
+) || [];
+
+let container =
+document.getElementById(
+"listHistory"
 );
 
-let ul =
-document.getElementById("list");
+container.innerHTML="";
 
-let emptyMsg =
-document.getElementById("emptyMsg");
+/* Latest on Top */
 
-ul.innerHTML = "";
+history.reverse().forEach(
+function(list,index){
 
-if(data && data.length > 0){
+let card =
+document.createElement("div");
 
-emptyMsg.style.display = "none";
+card.className="list-card";
 
-data.forEach(function(item){
+/* Highlight new */
 
-let li =
-document.createElement("li");
+if(list.status==="pending"){
 
-li.className = "card";
+card.classList.add("new-list");
 
-/* Checkbox */
+}
 
-let checkbox =
-document.createElement("input");
+if(list.status==="completed"){
 
-checkbox.type = "checkbox";
+card.classList.add("completed");
 
-/* Text */
+}
 
-let text =
-document.createTextNode(item);
+/* Date */
 
-/* Append */
+card.innerHTML=
 
-li.appendChild(checkbox);
+`
+<b>${list.time}</b>
+<br>
+Items: ${list.items.length}
+`;
 
-li.appendChild(text);
+if(list.status==="completed"){
 
-ul.appendChild(li);
+let tick =
+document.createElement("div");
+
+tick.className="tick";
+
+tick.innerHTML="✔";
+
+card.appendChild(tick);
+
+}
+
+/* Click open */
+
+card.onclick=function(){
+
+openList(index);
+
+};
+
+container.appendChild(card);
 
 });
 
 }
 
-else {
+/* OPEN LIST */
 
-emptyMsg.style.display = "block";
+function openList(index){
+
+let history =
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+let list =
+history.reverse()[index];
+
+document.getElementById(
+"listHistory"
+).style.display="none";
+
+document.getElementById(
+"itemView"
+).style.display="block";
+
+document.getElementById(
+"listTime"
+).innerText=list.time;
+
+let itemsBox =
+document.getElementById(
+"items"
+);
+
+itemsBox.innerHTML="";
+
+list.items.forEach(function(item){
+
+let div =
+document.createElement("div");
+
+div.className="item-box";
+
+div.innerHTML=
+
+`
+<input type="checkbox">
+${item}
+`;
+
+itemsBox.appendChild(div);
+
+});
 
 }
 
-}
+/* FINISH LIST */
 
-/* CLEAR LIST */
+function finishList(){
 
-function clearList(){
+let amount =
+document.getElementById(
+"amountPaid"
+).value;
 
-localStorage.removeItem(
-"provisionList"
+let history =
+JSON.parse(
+localStorage.getItem("allLists")
+);
+
+history[history.length-1]
+.status="completed";
+
+history[history.length-1]
+.amount=amount;
+
+localStorage.setItem(
+"allLists",
+JSON.stringify(history)
 );
 
 alert("List Completed!");
@@ -317,18 +413,18 @@ location.reload();
 
 }
 
-/* LOGOUT FUNCTION */
+/* LOGOUT */
 
 function logout(){
 
-window.location.href =
+window.location.href=
 "index.html";
 
 }
 
-/* LOAD ON START */
+/* INITIAL LOAD */
 
-window.onload = loadList;
+window.onload=loadHistory;
 
 </script>
 
