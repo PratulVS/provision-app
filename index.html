@@ -6,6 +6,8 @@
 
 <style>
 
+/* BODY */
+
 body {
 
 font-family:'Segoe UI',sans-serif;
@@ -25,9 +27,9 @@ align-items:center;
 
 }
 
-/* LOGIN BOX */
+/* MAIN BOX */
 
-.login-box {
+.container {
 
 background:white;
 
@@ -35,7 +37,7 @@ padding:30px;
 
 border-radius:15px;
 
-width:300px;
+width:320px;
 
 box-shadow:
 0 4px 15px rgba(0,0,0,0.1);
@@ -44,27 +46,15 @@ text-align:center;
 
 }
 
-input {
+/* BUTTONS */
+
+.main-btn {
 
 width:100%;
 
-padding:10px;
+padding:14px;
 
-margin:8px 0;
-
-border-radius:8px;
-
-border:1px solid #ccc;
-
-}
-
-button {
-
-width:100%;
-
-padding:12px;
-
-margin-top:10px;
+margin:10px 0;
 
 border:none;
 
@@ -73,6 +63,8 @@ border-radius:10px;
 font-weight:bold;
 
 cursor:pointer;
+
+font-size:16px;
 
 }
 
@@ -85,14 +77,51 @@ color:white;
 
 }
 
-/* Login Button */
+/* Pratul Button */
 
-.login-btn {
+.pratul-btn {
 
 background:#3b82f6;
 color:white;
 
 }
+
+/* LOGIN FORM */
+
+.login-form {
+
+margin-top:15px;
+
+display:none;
+
+}
+
+/* INPUT */
+
+input {
+
+width:100%;
+
+padding:10px;
+
+margin:6px 0;
+
+border-radius:8px;
+
+border:1px solid #ccc;
+
+}
+
+/* LOGIN BUTTON */
+
+.login-btn {
+
+background:#2563eb;
+color:white;
+
+}
+
+/* ERROR */
 
 .error {
 
@@ -110,23 +139,35 @@ margin-top:5px;
 
 <body>
 
-<div class="login-box">
+<div class="container">
 
 <h2>Family Provisions</h2>
 
-<!-- SHoba Login -->
+<!-- SHOBA BUTTON -->
 
 <button
-class="shoba-btn"
+class="main-btn shoba-btn"
 onclick="goShoba()">
 
 👩 Shoba Dashboard
 
 </button>
 
-<hr style="margin:15px 0">
+<!-- PRATUL BUTTON -->
 
-<!-- Pratul Login -->
+<button
+class="main-btn pratul-btn"
+onclick="showLogin()">
+
+👨 Pratul Dashboard
+
+</button>
+
+<!-- LOGIN FORM -->
+
+<div
+class="login-form"
+id="loginForm">
 
 <input
 type="text"
@@ -139,20 +180,24 @@ id="password"
 placeholder="Password">
 
 <button
-class="login-btn"
+class="main-btn login-btn"
 onclick="login()">
 
 Login as Pratul
 
 </button>
 
-<p id="errorMsg" class="error"></p>
+<p
+id="errorMsg"
+class="error"></p>
+
+</div>
 
 </div>
 
 <script>
 
-/* SHoba Redirect */
+/* SHOBA */
 
 function goShoba(){
 
@@ -161,17 +206,31 @@ window.location.href=
 
 }
 
+/* SHOW LOGIN FORM */
+
+function showLogin(){
+
+document.getElementById(
+"loginForm"
+).style.display="block";
+
+}
+
 /* LOGIN */
 
 function login(){
 
 let user =
-document.getElementById("username").value;
+document.getElementById(
+"username"
+).value;
 
 let pass =
-document.getElementById("password").value;
+document.getElementById(
+"password"
+).value;
 
-/* Credentials */
+/* YOUR LOGIN */
 
 let validUser =
 "vspratul2004@gmail.com";
