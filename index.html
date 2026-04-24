@@ -5,9 +5,13 @@
 
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
+
 <link rel="manifest" href="manifest.json">
+
 <meta name="theme-color" content="#22c55e">
+
 <link rel="stylesheet" href="style.css">
+
 <title>Family Provision Login</title>
 
 <style>
@@ -74,7 +78,7 @@ font-size:16px;
 
 }
 
-/* SHoba Button */
+/* Shoba Button */
 
 .shoba-btn {
 
@@ -207,8 +211,7 @@ class="error"></p>
 
 function goShoba(){
 
-window.location.href=
-"shoba.html";
+window.location.href="shoba.html";
 
 }
 
@@ -227,32 +230,38 @@ document.getElementById(
 function login(){
 
 let user =
-document.getElementById(
-"username"
-).value;
+document.getElementById("username").value;
 
 let pass =
-document.getElementById(
-"password"
-).value;
+document.getElementById("password").value;
 
-/* YOUR LOGIN */
+/* VALID LOGIN */
 
 let validUser =
 "vspratul2004@gmail.com";
 
-let validPass =
-"Pratul123!!!";
+/* TWO PASSWORDS */
 
-if(user===validUser && pass===validPass){
+if(
+
+user === validUser
+
+&&
+
+(
+pass === "Pratul123!!!"
+||
+pass === "9944352375"
+)
+
+){
 
 localStorage.setItem(
 "isLoggedIn",
 "true"
 );
 
-window.location.href=
-"pratul.html";
+window.location.href="pratul.html";
 
 }
 
@@ -268,6 +277,9 @@ document.getElementById(
 }
 
 </script>
+
+<!-- SERVICE WORKER -->
+
 <script>
 
 if ("serviceWorker" in navigator) {
@@ -279,6 +291,7 @@ navigator.serviceWorker.register(
 }
 
 </script>
+
 </body>
 
 </html>
